@@ -26,6 +26,12 @@ link_directories(
         ${CMAKE_SOURCE_DIR}/external/SimConnect
 )
 
+add_definitions(
+        -DWIN32_LEAN_AND_MEAN
+        -DNOMINMAX
+        -DNOGDI
+)
+
 add_library(
         SimConnectToolbox SHARED
         src/Factory/Factory.cpp

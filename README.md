@@ -25,13 +25,11 @@ a *Simulation Pacing* set to `1`.**
 
 Ensure the environment variable `MSFS_SDK` is properly pointing to the MSFS SDK location.
 
-:warning: **Currently the fork as specified has to be used. The reason is an incompatible naming of the enum Log::Type. It interferes with Windows.h. A pull request to the original repository has been made.**
-
 Use the following commands to get this repository and build it:
 
 ```lang-bash
 # download and build blockfactory
-git clone https://github.com/aguther/blockfactory.git
+git clone https://github.com/robotology/blockfactory.git
 cd blockfactory
 cmake -S . -B build
 cmake --build build --config Release
