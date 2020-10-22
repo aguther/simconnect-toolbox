@@ -43,6 +43,16 @@ cmake -S . -B build
 cmake --build build --config Release
 ```
 
+### Usage
+
+In order to use the toolbox in MATLAB you need to do the following:
+- add the folder `<simconnect-toolbox>/matlab` to MATLAB path
+- add the folder `<simconnect-toolbox>/matlab` to the `PATH` environment variable of your user account (or system)
+
+:information_source: You can also put the content of directory `<simconnect-toolbox>/matlab` to a location of your choice and do the steps described above for the new location. 
+
+:warning: **When you do not add the directory to your PATH variable, you possibly will get an error when using one of the blocks, because Windows does not find the needed DLLs.**
+
 ## SimConnect Source & Sink
 
 This block allows to read/write data from/to SimConnect.
