@@ -20,8 +20,8 @@
 #include <memory>
 #include <Windows.h>
 #include <SimConnect.h>
-#include <SimConnectVariable.h>
-#include <SimConnectVariableLookupTable.h>
+#include "SimConnectVariable.h"
+#include "SimConnectVariableLookupTable.h"
 
 namespace simconnect::toolbox::connection {
 class SimConnectDataDefinition;

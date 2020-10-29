@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 #include "SimConnectVariable.h"
-#include <SimConnectDataDefinition.h>
+#include "SimConnectDataDefinition.h"
 
 namespace simconnect::toolbox::connection {
 class SimConnectVariableParser;

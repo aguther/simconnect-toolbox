@@ -20,3 +20,4 @@ _deps
 matlab/BlockFactory*
 matlab/*.dll
 matlab/*.cfg
+matlab/*.exe
