@@ -25,7 +25,8 @@ bool SimConnectInputInterface::connect(
     int configurationIndex,
     const string &name,
     const SimConnectDataDefinition &dataDefinition,
-    const shared_ptr<SimConnectData> &simConnectData
+    const shared_ptr<SimConnectData> &simConnectData,
+    const DWORD priority
 ) {
   // store connection name
   connectionName = name;
@@ -46,7 +47,7 @@ bool SimConnectInputInterface::connect(
     // store data object
     this->data = simConnectData;
     // add data to definition
-    if (!prepareDataDefinition(hSimConnect, 0, dataDefinition)) {
+    if (!prepareDataDefinition(hSimConnect, 0, dataDefinition, priority)) {
       // failed to add data definition -> disconnect
       disconnect();
       // failed to connect
@@ -134,7 +135,8 @@ void SimConnectInputInterface::simConnectProcessEvent(
 bool SimConnectInputInterface::prepareDataDefinition(
     HANDLE connectionHandle,
     SIMCONNECT_DATA_DEFINITION_ID id,
-    SimConnectDataDefinition dataDefinition
+    SimConnectDataDefinition dataDefinition,
+    DWORD priority
 ) {
   // iterate over data definitions
   for (int i = 0; i < dataDefinition.size(); ++i) {
@@ -142,7 +144,8 @@ bool SimConnectInputInterface::prepareDataDefinition(
         connectionHandle,
         id,
         i,
-        dataDefinition.get(i)
+        dataDefinition.get(i),
+        priority
     );
     if (!result) return false;
   }
@@ -155,7 +158,8 @@ bool SimConnectInputInterface::addDataDefinition(
     HANDLE connectionHandle,
     SIMCONNECT_DATA_DEFINITION_ID groupId,
     SIMCONNECT_CLIENT_EVENT_ID eventId,
-    const SimConnectVariable &variable
+    const SimConnectVariable &variable,
+    DWORD priority
 ) {
   HRESULT result = SimConnect_MapClientEventToSimEvent(
       connectionHandle,
@@ -181,7 +185,7 @@ bool SimConnectInputInterface::addDataDefinition(
   result = SimConnect_SetNotificationGroupPriority(
       connectionHandle,
       groupId,
-      SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE
+      priority
   );
   if (result != S_OK) {
     // failed -> abort

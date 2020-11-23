@@ -37,7 +37,8 @@ class simconnect::toolbox::connection::SimConnectInputInterface {
       int configurationIndex,
       const std::string &name,
       const SimConnectDataDefinition &dataDefinition,
-      const std::shared_ptr<SimConnectData> &simConnectData
+      const std::shared_ptr<SimConnectData> &simConnectData,
+      DWORD priority = SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE
   );
 
   void disconnect();
@@ -62,13 +63,15 @@ class simconnect::toolbox::connection::SimConnectInputInterface {
   static bool prepareDataDefinition(
       HANDLE connectionHandle,
       SIMCONNECT_DATA_DEFINITION_ID id,
-      SimConnectDataDefinition dataDefinition
+      SimConnectDataDefinition dataDefinition,
+      DWORD priority
   );
 
   static bool addDataDefinition(
       HANDLE connectionHandle,
       SIMCONNECT_DATA_DEFINITION_ID groupId,
       SIMCONNECT_CLIENT_EVENT_ID eventId,
-      const SimConnectVariable& variable
+      const SimConnectVariable &variable,
+      DWORD priority
   );
 };
