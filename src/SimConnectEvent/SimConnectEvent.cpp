@@ -14,7 +14,7 @@
  *     limitations under the License.
  */
 
-#include "SimConnectSource.h"
+#include "SimConnectEvent.h"
 
 #include <BlockFactory/Core/Log.h>
 #include <BlockFactory/Core/Parameter.h>
@@ -25,11 +25,11 @@ using namespace blockfactory::core;
 using namespace simconnect::toolbox::blocks;
 using namespace simconnect::toolbox::connection;
 
-unsigned SimConnectSource::numberOfParameters() {
-  return Block::numberOfParameters() + 3;
+unsigned SimConnectEvent::numberOfParameters() {
+  return Block::numberOfParameters() + 2;
 }
 
-bool SimConnectSource::parseParameters(
+bool SimConnectEvent::parseParameters(
     BlockInformation *blockInfo
 ) {
   // get base index
@@ -39,7 +39,6 @@ bool SimConnectSource::parseParameters(
   const std::vector<ParameterMetadata> metadata{
       {ParameterType::INT, index++, 1, 1, "ConfigurationIndex"},
       {ParameterType::STRING, index++, 1, 1, "ConnectionName"},
-      {ParameterType::STRING, index++, 1, 1, "Variables"}
   };
 
   // add parameters
@@ -53,7 +52,7 @@ bool SimConnectSource::parseParameters(
   return blockInfo->parseParameters(m_parameters);
 }
 
-bool SimConnectSource::configureSizeAndPorts(
+bool SimConnectEvent::configureSizeAndPorts(
     BlockInformation *blockInfo
 ) {
   if (!Block::configureSizeAndPorts(blockInfo)) {
@@ -61,7 +60,7 @@ bool SimConnectSource::configureSizeAndPorts(
   }
 
   // parse the parameters
-  if (!SimConnectSource::parseParameters(blockInfo)) {
+  if (!SimConnectEvent::parseParameters(blockInfo)) {
     bfError << "Failed to parse parameters.";
     return false;
   }
@@ -78,37 +77,20 @@ bool SimConnectSource::configureSizeAndPorts(
 
   // get output count
   try {
-    auto variables = SimConnectVariableParser::getSimConnectVariablesFromParameterString(parameterVariables);
-    for (unsigned long long kI = 0; kI < variables.size(); ++kI) {
-      switch (SimConnectVariableLookupTable::getDataType(variables[kI], SimConnectVariableLookupTable::Type::Data)) {
-        case SIMCONNECT_VARIABLE_TYPE_BOOL:
-        case SIMCONNECT_VARIABLE_TYPE_INT32:
-        case SIMCONNECT_VARIABLE_TYPE_FLOAT32:
-        case SIMCONNECT_VARIABLE_TYPE_FLOAT64:
-          outputPortInfo.push_back(
-              {
-                  kI,
-                  {1},
-                  Port::DataType::DOUBLE
-              }
-          );
-          break;
-
-        case SIMCONNECT_VARIABLE_TYPE_LATLONALT:
-        case SIMCONNECT_VARIABLE_TYPE_XYZ:
-          outputPortInfo.push_back(
-              {
-                  kI,
-                  {3},
-                  Port::DataType::DOUBLE
-              }
-          );
-          break;
-
-        default:
-          break;
-      }
-    }
+    outputPortInfo.push_back(
+        {
+            0,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
+    outputPortInfo.push_back(
+        {
+            1,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -123,7 +105,7 @@ bool SimConnectSource::configureSizeAndPorts(
   return true;
 }
 
-bool SimConnectSource::initialize(
+bool SimConnectEvent::initialize(
     BlockInformation *blockInfo
 ) {
   // the base Block class need to be initialized first
@@ -132,7 +114,7 @@ bool SimConnectSource::initialize(
   }
 
   // parse the parameters
-  if (!SimConnectSource::parseParameters(blockInfo)) {
+  if (!SimConnectEvent::parseParameters(blockInfo)) {
     bfError << "Failed to parse parameters.";
     return false;
   }
@@ -157,9 +139,9 @@ bool SimConnectSource::initialize(
   }
   try {
     // parse variables and get data definition
-    auto simConnectVariables = SimConnectVariableParser::getSimConnectVariablesFromParameterString(parameterVariables);
-    simConnectDataDefinition = SimConnectVariableParser::getSimConnectDataDefinitionFromVariables(
-        simConnectVariables, SimConnectVariableLookupTable::Type::Data);
+    simConnectDataDefinition = SimConnectDataDefinition(SimConnectVariableLookupTable::Type::Event);
+    simConnectDataDefinition.add(SimConnectVariable("SIM", ""));
+    simConnectDataDefinition.add(SimConnectVariable("PAUSE", ""));
 
     // create data object
     simConnectData = std::make_shared<SimConnectData>(simConnectDataDefinition);
@@ -184,7 +166,7 @@ bool SimConnectSource::initialize(
   return true;
 }
 
-bool SimConnectSource::output(
+bool SimConnectEvent::output(
     const BlockInformation *blockInfo
 ) {
   // vector for output signals
@@ -202,10 +184,6 @@ bool SimConnectSource::output(
   }
 
   // get data from simconnect
-  if (!simConnectInterface.requestData()) {
-    bfError << "Failed to request data from SimConnect";
-    return false;
-  }
   if (!simConnectInterface.readData()) {
     bfError << "Failed to read data from SimConnect";
     return false;
@@ -215,31 +193,7 @@ bool SimConnectSource::output(
   for (int kI = 0; kI < outputSignals.size(); ++kI) {
     switch (simConnectDataDefinition.getType(kI)) {
       case SIMCONNECT_VARIABLE_TYPE_BOOL:
-        outputSignals[kI]->set(0, std::any_cast<bool>(simConnectData->get(kI)) ? 1.0 : 0.0);
-        break;
-
-      case SIMCONNECT_VARIABLE_TYPE_INT32:
-        outputSignals[kI]->set(0, static_cast<double>(std::any_cast<long>(simConnectData->get(kI))));
-        break;
-
-      case SIMCONNECT_VARIABLE_TYPE_FLOAT32:
-        outputSignals[kI]->set(0, static_cast<double>(std::any_cast<float>(simConnectData->get(kI))));
-        break;
-
-      case SIMCONNECT_VARIABLE_TYPE_FLOAT64:
-        outputSignals[kI]->set(0, std::any_cast<double>(simConnectData->get(kI)));
-        break;
-
-      case SIMCONNECT_VARIABLE_TYPE_LATLONALT:
-        outputSignals[kI]->set(0, std::any_cast<SIMCONNECT_DATA_LATLONALT>(simConnectData->get(kI)).Latitude);
-        outputSignals[kI]->set(1, std::any_cast<SIMCONNECT_DATA_LATLONALT>(simConnectData->get(kI)).Longitude);
-        outputSignals[kI]->set(2, std::any_cast<SIMCONNECT_DATA_LATLONALT>(simConnectData->get(kI)).Altitude);
-        break;
-
-      case SIMCONNECT_VARIABLE_TYPE_XYZ:
-        outputSignals[kI]->set(0, std::any_cast<SIMCONNECT_DATA_XYZ>(simConnectData->get(kI)).x);
-        outputSignals[kI]->set(1, std::any_cast<SIMCONNECT_DATA_XYZ>(simConnectData->get(kI)).y);
-        outputSignals[kI]->set(2, std::any_cast<SIMCONNECT_DATA_XYZ>(simConnectData->get(kI)).z);
+        outputSignals[kI]->set(0, std::any_cast<bool>(simConnectData->get(kI)));
         break;
 
       default:
@@ -251,7 +205,7 @@ bool SimConnectSource::output(
   return true;
 }
 
-bool SimConnectSource::terminate(
+bool SimConnectEvent::terminate(
     const BlockInformation *blockInfo
 ) {
   // disconnect

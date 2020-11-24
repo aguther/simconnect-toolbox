@@ -80,7 +80,7 @@ bool SimConnectInput::configureSizeAndPorts(
   try {
     auto variables = SimConnectVariableParser::getSimConnectVariablesFromParameterString(parameterVariables);
     for (unsigned long long kI = 0; kI < variables.size(); ++kI) {
-      switch (SimConnectVariableLookupTable::getDataType(variables[kI])) {
+      switch (SimConnectVariableLookupTable::getDataType(variables[kI], SimConnectVariableLookupTable::Type::Input)) {
         case SIMCONNECT_VARIABLE_TYPE_FLOAT64:
           outputPortInfo.push_back(
               {
@@ -144,7 +144,8 @@ bool SimConnectInput::initialize(
   try {
     // parse variables and get data definition
     auto simConnectVariables = SimConnectVariableParser::getSimConnectVariablesFromParameterString(parameterVariables);
-    simConnectDataDefinition = SimConnectVariableParser::getSimConnectDataDefinitionFromVariables(simConnectVariables);
+    simConnectDataDefinition = SimConnectVariableParser::getSimConnectDataDefinitionFromVariables(
+        simConnectVariables, SimConnectVariableLookupTable::Type::Input);
 
     // create data object
     simConnectData = std::make_shared<SimConnectData>(simConnectDataDefinition);

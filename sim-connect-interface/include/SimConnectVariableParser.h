@@ -55,10 +55,11 @@ class simconnect::toolbox::connection::SimConnectVariableParser {
   }
 
   static SimConnectDataDefinition getSimConnectDataDefinitionFromVariables(
-      const std::vector<SimConnectVariable> &variables
+      const std::vector<SimConnectVariable> &variables,
+      SimConnectVariableLookupTable::Type type
   ) {
     // create data definition
-    auto dataDefinition = SimConnectDataDefinition();
+    auto dataDefinition = SimConnectDataDefinition(type);
 
     // add variables
     for (const auto &variable : variables) {

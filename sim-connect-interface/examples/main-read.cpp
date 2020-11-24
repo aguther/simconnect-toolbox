@@ -28,7 +28,7 @@ using namespace simconnect::toolbox::connection;
 
 int main() {
   // data definition defines what to read / write
-  auto dataDefinition = SimConnectDataDefinition();
+  auto dataDefinition = SimConnectDataDefinition(SimConnectVariableLookupTable::Data);
   // add variables to definition
   dataDefinition.add(SimConnectVariable("G FORCE", "GFORCE"));
   dataDefinition.add(SimConnectVariable("PLANE ALTITUDE", "FEET"));

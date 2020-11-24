@@ -22,20 +22,46 @@ using namespace std;
 using namespace simconnect::toolbox::connection;
 
 bool SimConnectVariableLookupTable::isKnown(
-    const SimConnectVariable &item
+    const SimConnectVariable &item,
+    Type type
 ) {
-  return LOOKUP_TABLE.find(normalizeName(item.name)) != LOOKUP_TABLE.end();
+  switch (type) {
+    case Type::Data:
+      return LOOKUP_TABLE_DATA.find(normalizeName(item.name)) != LOOKUP_TABLE_DATA.end();
+
+    case Type::Input:
+      return LOOKUP_TABLE_INPUT.find(normalizeName(item.name)) != LOOKUP_TABLE_INPUT.end();
+
+    case Type::Event:
+      return LOOKUP_TABLE_EVENT.find(normalizeName(item.name)) != LOOKUP_TABLE_EVENT.end();
+
+    default:
+      return false;
+  }
 }
 
 SIMCONNECT_VARIABLE_TYPE SimConnectVariableLookupTable::getDataType(
-    const SimConnectVariable &item
+    const SimConnectVariable &item,
+    Type type
 ) {
   // check if variable is known
-  if (!isKnown(item)) {
+  if (!isKnown(item, type)) {
     throw invalid_argument("The variable is not known!");
   }
   // return data type that is mapped to variable
-  return LOOKUP_TABLE.at(normalizeName(item.name));
+  switch (type) {
+    case Type::Data:
+      return LOOKUP_TABLE_DATA.at(normalizeName(item.name));
+
+    case Type::Input:
+      return LOOKUP_TABLE_INPUT.at(normalizeName(item.name));
+
+    case Type::Event:
+      return LOOKUP_TABLE_EVENT.at(normalizeName(item.name));
+
+    default:
+      return SIMCONNECT_VARIABLE_TYPE::SIMCONNECT_VARIABLE_TYPE_INVALID;
+  }
 }
 
 string SimConnectVariableLookupTable::normalizeName(

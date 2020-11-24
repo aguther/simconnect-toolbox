@@ -29,7 +29,9 @@ class SimConnectDataDefinition;
 
 class simconnect::toolbox::connection::SimConnectDataDefinition {
  public:
-  explicit SimConnectDataDefinition();
+  explicit SimConnectDataDefinition(
+      SimConnectVariableLookupTable::Type type = SimConnectVariableLookupTable::Type::Data
+  );
 
   SimConnectDataDefinition(
       const SimConnectDataDefinition &other
@@ -60,5 +62,6 @@ class simconnect::toolbox::connection::SimConnectDataDefinition {
   );
 
  private:
+  SimConnectVariableLookupTable::Type type;
   std::deque<SimConnectVariable> variables;
 };

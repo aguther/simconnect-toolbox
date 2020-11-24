@@ -19,6 +19,7 @@ add_library(
         include/SimConnectData.h
         include/SimConnectDataDefinition.h
         include/SimConnectDataInterface.h
+        include/SimConnectEventInterface.h
         include/SimConnectInputInterface.h
         include/SimConnectVariable.h
         include/SimConnectVariableLookupTable.h
@@ -27,6 +28,7 @@ add_library(
         src/SimConnectData.cpp
         src/SimConnectDataDefinition.cpp
         src/SimConnectDataInterface.cpp
+        src/SimConnectEventInterface.cpp
         src/SimConnectInputInterface.cpp
         src/SimConnectVariableLookupTable.cpp
 )

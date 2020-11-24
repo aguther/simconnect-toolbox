@@ -65,7 +65,31 @@ target_link_libraries(
 )
 
 add_custom_command(
-        TARGET SimConnectTestRead
+        TARGET SimConnectTestInput
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:SimConnectTestInput>/SimConnectTestInput.exe" "${CMAKE_SOURCE_DIR}/matlab"
+)
+
+# ---------------------- SimConnectTestEvent ----------------------------------
+
+add_executable(
+        SimConnectTestEvent
+        main-event.cpp
+)
+
+set_target_properties(
+        SimConnectTestEvent PROPERTIES
+        EXCLUDE_FROM_ALL TRUE
+)
+
+target_link_libraries(
+        SimConnectTestEvent PRIVATE
+        SimConnectInterface
+        SimConnect
+)
+
+add_custom_command(
+        TARGET SimConnectTestEvent
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:SimConnectTestInput>/SimConnectTestInput.exe" "${CMAKE_SOURCE_DIR}/matlab"
 )

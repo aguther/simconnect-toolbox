@@ -21,7 +21,9 @@
 using namespace std;
 using namespace simconnect::toolbox::connection;
 
-SimConnectDataDefinition::SimConnectDataDefinition() : variables() {
+SimConnectDataDefinition::SimConnectDataDefinition(
+    SimConnectVariableLookupTable::Type type
+) : variables(), type(type) {
 }
 
 SimConnectDataDefinition::SimConnectDataDefinition(
@@ -31,6 +33,7 @@ SimConnectDataDefinition::SimConnectDataDefinition(
   for (const auto &variable : other.variables) {
     variables.push_back(variable);
   }
+  type = other.type;
 }
 
 SimConnectDataDefinition &SimConnectDataDefinition::operator=(
@@ -40,6 +43,7 @@ SimConnectDataDefinition &SimConnectDataDefinition::operator=(
   for (const auto &variable : other.variables) {
     variables.push_back(variable);
   }
+  type = other.type;
   return *this;
 }
 
@@ -48,7 +52,7 @@ SimConnectDataDefinition::~SimConnectDataDefinition() = default;
 void SimConnectDataDefinition::add(
     const SimConnectVariable &item
 ) {
-  if (!SimConnectVariableLookupTable::isKnown(item)) {
+  if (!SimConnectVariableLookupTable::isKnown(item, type)) {
     throw std::invalid_argument("Variable is not known!");
   }
   variables.push_back(item);
@@ -73,5 +77,5 @@ SIMCONNECT_VARIABLE_TYPE SimConnectDataDefinition::getType(
 SIMCONNECT_VARIABLE_TYPE SimConnectDataDefinition::getType(
     const SimConnectVariable &item
 ) {
-  return SimConnectVariableLookupTable::getDataType(item);
+  return SimConnectVariableLookupTable::getDataType(item, type);
 }

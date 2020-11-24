@@ -80,7 +80,7 @@ bool SimConnectSink::configureSizeAndPorts(
   try {
     auto variables = SimConnectVariableParser::getSimConnectVariablesFromParameterString(parameterVariables);
     for (unsigned long long kI = 0; kI < variables.size(); ++kI) {
-      switch (SimConnectVariableLookupTable::getDataType(variables[kI])) {
+      switch (SimConnectVariableLookupTable::getDataType(variables[kI], SimConnectVariableLookupTable::Type::Data)) {
         case SIMCONNECT_VARIABLE_TYPE_BOOL:
         case SIMCONNECT_VARIABLE_TYPE_INT32:
         case SIMCONNECT_VARIABLE_TYPE_FLOAT32:
@@ -155,7 +155,8 @@ bool SimConnectSink::initialize(
   try {
     // parse variables and get data definition
     auto simConnectVariables = SimConnectVariableParser::getSimConnectVariablesFromParameterString(parameterVariables);
-    simConnectDataDefinition = SimConnectVariableParser::getSimConnectDataDefinitionFromVariables(simConnectVariables);
+    simConnectDataDefinition = SimConnectVariableParser::getSimConnectDataDefinitionFromVariables(
+        simConnectVariables, SimConnectVariableLookupTable::Type::Data);
 
     // create data object
     simConnectData = std::make_shared<SimConnectData>(simConnectDataDefinition);

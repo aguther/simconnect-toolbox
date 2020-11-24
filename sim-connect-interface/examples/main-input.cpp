@@ -27,10 +27,9 @@ using namespace simconnect::toolbox::connection;
 
 int main() {
   // data definition defines what to read / write
-  auto dataDefinition = SimConnectDataDefinition();
+  auto dataDefinition = SimConnectDataDefinition(SimConnectVariableLookupTable::Input);
   // add variables to definition
-  dataDefinition.add(SimConnectVariable("AXIS_ELEVATOR_SET", "TRUE"));
-  dataDefinition.add(SimConnectVariable("AXIS_AILERONS_SET", "FALSE"));
+  dataDefinition.add(SimConnectVariable("AXIS_THROTTLE1_SET", "FALSE"));
   // create data object holding the actual data
   auto simConnectData = make_shared<SimConnectData>(dataDefinition);
 

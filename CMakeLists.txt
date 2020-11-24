@@ -16,6 +16,7 @@ find_package(
 include_directories(
         "$ENV{MSFS_SDK}/SimConnect SDK/include"
         ${CMAKE_SOURCE_DIR}/sim-connect-interface/include
+        ${CMAKE_SOURCE_DIR}/src/SimConnectEvent
         ${CMAKE_SOURCE_DIR}/src/SimConnectInput
         ${CMAKE_SOURCE_DIR}/src/SimConnectSink
         ${CMAKE_SOURCE_DIR}/src/SimConnectSource
@@ -37,6 +38,8 @@ add_subdirectory(sim-connect-interface/examples)
 add_library(
         SimConnectToolbox SHARED
         src/Factory/Factory.cpp
+        src/SimConnectEvent/SimConnectEvent.cpp
+        src/SimConnectEvent/SimConnectEvent.h
         src/SimConnectInput/SimConnectInput.cpp
         src/SimConnectInput/SimConnectInput.h
         src/SimConnectSink/SimConnectSink.cpp

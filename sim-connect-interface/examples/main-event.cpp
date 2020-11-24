@@ -20,44 +20,42 @@
 #include <thread>
 #include <SimConnectData.h>
 #include <SimConnectDataDefinition.h>
-#include <SimConnectDataInterface.h>
+#include <SimConnectEventInterface.h>
 
 using namespace std;
 using namespace simconnect::toolbox::connection;
 
 int main() {
   // data definition defines what to read / write
-  auto dataDefinition = SimConnectDataDefinition(SimConnectVariableLookupTable::Data);
+  auto dataDefinition = SimConnectDataDefinition(SimConnectVariableLookupTable::Event);
   // add variables to definition
-  dataDefinition.add(SimConnectVariable("RUDDER TRIM PCT", "Percent Over 100"));
+  dataDefinition.add(SimConnectVariable("SIM", ""));
+  dataDefinition.add(SimConnectVariable("PAUSE", ""));
   // create data object holding the actual data
   auto simConnectData = make_shared<SimConnectData>(dataDefinition);
 
   // connect to sim
-  SimConnectDataInterface simConnectInterface;
+  SimConnectEventInterface simConnectInterface;
   bool connected = simConnectInterface.connect(
       0,
-      "example-write",
+      "example-event",
       dataDefinition,
       simConnectData
   );
   cout << connected << endl;
 
-  bool lightOn = false;
-  unsigned int runningIndex = 0;
-
-  while (true) {
-    if (runningIndex++ % 5 == 0) {
-      lightOn = !lightOn;
+  while (simConnectInterface.readData()) {
+    for (int kI = 0; kI < dataDefinition.size(); ++kI) {
+      switch (dataDefinition.getType(kI)) {
+        case SIMCONNECT_VARIABLE_TYPE_BOOL:
+          cout << dataDefinition.get(kI).name << ": ";
+          cout << any_cast<bool>(simConnectData->get(kI)) << " ";
+          break;
+        default:
+          break;
+      }
     }
-
-    simConnectData->set(0, lightOn ? -1.0 : 1.0);
-    if (simConnectInterface.sendData()) {
-      cout << "Success writing" << endl;
-    } else {
-      cout << "Failed writing" << endl;
-    }
-
+    cout << endl;
     this_thread::sleep_for(chrono::milliseconds(500));
   }
 

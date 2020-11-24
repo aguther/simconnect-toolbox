@@ -1,3 +1,4 @@
+#include <SimConnectEvent.h>
 #include "SimConnectInput.h"
 #include "SimConnectSink.h"
 #include "SimConnectSource.h"
@@ -7,6 +8,12 @@
 
 // Class factory API
 #include <shlibpp/SharedLibraryClassApi.h>
+
+SHLIBPP_DEFINE_SHARED_SUBCLASS(
+    SimConnectEvent,
+    simconnect::toolbox::blocks::SimConnectEvent,
+    blockfactory::core::Block
+);
 
 SHLIBPP_DEFINE_SHARED_SUBCLASS(
     SimConnectInput,
