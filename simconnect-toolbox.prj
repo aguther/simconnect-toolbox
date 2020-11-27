@@ -10,7 +10,7 @@
 See also here:
 https://github.com/aguther/simconnect-toolbox</param.description>
     <param.screenshot />
-    <param.version>1.0</param.version>
+    <param.version>1.1.1</param.version>
     <param.output>${PROJECT_ROOT}\SimConnect Toolbox.mltbx</param.output>
     <param.products.name>
       <item>MATLAB</item>
@@ -57,7 +57,6 @@ https://github.com/aguther/simconnect-toolbox</param.description>
       <param.email />
       <param.company />
       <param.screenshot />
-      <param.version />
       <param.output />
       <param.platforms />
       <param.exclude.filters />
