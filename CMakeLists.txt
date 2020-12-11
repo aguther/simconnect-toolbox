@@ -18,7 +18,9 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/sim-connect-interface/include
         ${CMAKE_SOURCE_DIR}/src/SimConnectInput
         ${CMAKE_SOURCE_DIR}/src/SimConnectSink
+        ${CMAKE_SOURCE_DIR}/src/SimConnectSinkFbw
         ${CMAKE_SOURCE_DIR}/src/SimConnectSource
+        ${CMAKE_SOURCE_DIR}/src/SimConnectSourceFbw
 )
 
 link_directories(
@@ -38,11 +40,10 @@ add_library(
         SimConnectToolbox SHARED
         src/Factory/Factory.cpp
         src/SimConnectInput/SimConnectInput.cpp
-        src/SimConnectInput/SimConnectInput.h
         src/SimConnectSink/SimConnectSink.cpp
-        src/SimConnectSink/SimConnectSink.h
+        src/SimConnectSinkFbw/SimConnectSinkFbw.cpp
         src/SimConnectSource/SimConnectSource.cpp
-        src/SimConnectSource/SimConnectSource.h
+        src/SimConnectSourceFbw/SimConnectSourceFbw.cpp
 )
 
 set_target_properties(
