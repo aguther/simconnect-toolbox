@@ -61,6 +61,8 @@ class simconnect::toolbox::blocks::SimConnectSourceFbw : public blockfactory::co
     bool enableAP;
     double targetTheta;
     double targetPhi;
+    double flightDirectoryTheta;
+    double flightDirectoryPhi;
   };
 
   int configurationIndex = 0;

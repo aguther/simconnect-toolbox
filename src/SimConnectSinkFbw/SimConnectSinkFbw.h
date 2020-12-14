@@ -61,6 +61,8 @@ class simconnect::toolbox::blocks::SimConnectSinkFbw : public blockfactory::core
     bool enableAP;
     double targetTheta;
     double targetPhi;
+    double flightDirectoryTheta;
+    double flightDirectoryPhi;
   };
 
   int configurationIndex = 0;
@@ -70,6 +72,8 @@ class simconnect::toolbox::blocks::SimConnectSinkFbw : public blockfactory::core
   CustomFlyByWireBlock lastData = {
       false,
       false,
+      -90,
+      -90,
       -90,
       -90
   };
