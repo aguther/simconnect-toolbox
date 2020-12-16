@@ -93,11 +93,6 @@ bool SimConnectSinkFbw::configureSizeAndPorts(
          {1},
          Port::DataType::DOUBLE}
     );
-    inputPortInfo.push_back(
-        {5,
-         {1},
-         Port::DataType::DOUBLE}
-    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -155,10 +150,7 @@ bool SimConnectSinkFbw::initialize(
   try {
     HRESULT result = true;
     result &= SimConnect_MapClientDataNameToID(
-        simConnectHandle,
-        "A32NX_FBW",
-        0
-    );
+        simConnectHandle, "A32NX_CLIENT_DATA_AUTOPILOT", 0);
 
     result &= SimConnect_CreateClientData(
         simConnectHandle,
@@ -171,13 +163,7 @@ bool SimConnectSinkFbw::initialize(
         simConnectHandle,
         0,
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_INT32
-    );
-    result &= SimConnect_AddToClientDataDefinition(
-        simConnectHandle,
-        0,
-        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_INT32
+        SIMCONNECT_CLIENTDATATYPE_INT64
     );
     result &= SimConnect_AddToClientDataDefinition(
         simConnectHandle,
@@ -222,7 +208,7 @@ bool SimConnectSinkFbw::output(
 ) {
   // vector for output signals
   std::vector<InputSignalPtr> inputSignals;
-  for (int kI = 0; kI < 6; ++kI) {
+  for (int kI = 0; kI < 5; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getInputPortSignal(kI);
     // check if output is ok
@@ -235,20 +221,18 @@ bool SimConnectSinkFbw::output(
   }
 
   // write output value to all signals
-  data.enableTrackingMode = inputSignals[0]->get<double>(0) != 0;
-  data.enableAP = inputSignals[1]->get<double>(0) != 0;
-  data.targetTheta = inputSignals[2]->get<double>(0);
-  data.targetPhi = inputSignals[3]->get<double>(0);
-  data.flightDirectoryTheta = inputSignals[4]->get<double>(0);
-  data.flightDirectoryPhi = inputSignals[5]->get<double>(0);
+  data.enableAutopilot = inputSignals[0]->get<double>(0) != 0;
+  data.flightDirectorTheta = inputSignals[1]->get<double>(0);
+  data.autopilotTheta = inputSignals[2]->get<double>(0);
+  data.flightDirectorPhi = inputSignals[3]->get<double>(0);
+  data.autopilotPhi = inputSignals[4]->get<double>(0);
 
   // only write when needed
-  if (data.enableTrackingMode != lastData.enableTrackingMode
-      || data.enableAP != lastData.enableAP
-      || data.targetTheta != lastData.targetTheta
-      || data.targetPhi != lastData.targetPhi
-      || data.flightDirectoryTheta != lastData.flightDirectoryTheta
-      || data.flightDirectoryPhi != lastData.flightDirectoryPhi) {
+  if (data.enableAutopilot != lastData.enableAutopilot
+      || data.flightDirectorTheta != lastData.flightDirectorTheta
+      || data.autopilotTheta != lastData.autopilotTheta
+      || data.flightDirectorPhi != lastData.flightDirectorPhi
+      || data.autopilotPhi != lastData.autopilotPhi) {
     // write data to simconnect
     HRESULT result = SimConnect_SetClientData(
         simConnectHandle,

@@ -3,6 +3,7 @@
 #include "SimConnectSource.h"
 #include "SimConnectSinkFbw.h"
 #include "SimConnectSourceFbw.h"
+#include "SimConnectSourceFbwFg.h"
 
 #pragma warning(disable : 4267)
 #pragma warning(disable : 4996)
@@ -37,5 +38,11 @@ SHLIBPP_DEFINE_SHARED_SUBCLASS(
 SHLIBPP_DEFINE_SHARED_SUBCLASS(
     SimConnectSourceFbw,
     simconnect::toolbox::blocks::SimConnectSourceFbw,
+    blockfactory::core::Block
+);
+
+SHLIBPP_DEFINE_SHARED_SUBCLASS(
+    SimConnectSourceFbwFg,
+    simconnect::toolbox::blocks::SimConnectSourceFbwFg,
     blockfactory::core::Block
 );

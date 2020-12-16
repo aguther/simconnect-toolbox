@@ -22,16 +22,16 @@
 #include <BlockFactory/Core/BlockInformation.h>
 
 namespace simconnect::toolbox::blocks {
-class SimConnectSourceFbw;
+class SimConnectSourceFbwFg;
 }
 
-class simconnect::toolbox::blocks::SimConnectSourceFbw : public blockfactory::core::Block {
+class simconnect::toolbox::blocks::SimConnectSourceFbwFg : public blockfactory::core::Block {
  public:
   static const std::string ClassName;
 
-  SimConnectSourceFbw() = default;
+  SimConnectSourceFbwFg() = default;
 
-  ~SimConnectSourceFbw() override = default;
+  ~SimConnectSourceFbwFg() override = default;
 
   unsigned numberOfParameters() override;
 
@@ -57,11 +57,8 @@ class simconnect::toolbox::blocks::SimConnectSourceFbw : public blockfactory::co
 
  private:
   struct CustomFlyByWireBlock {
-    bool enableAutopilot;
-    double flightDirectorTheta;
-    double autopilotTheta;
-    double flightDirectorPhi;
-    double autopilotPhi;
+    double crossTrackError;
+    double trackAngleError;
   };
 
   int configurationIndex = 0;
@@ -71,7 +68,7 @@ class simconnect::toolbox::blocks::SimConnectSourceFbw : public blockfactory::co
 
   void processDispatch();
 
-  void SimConnectSourceFbw::dispatchProcedure(
+  void SimConnectSourceFbwFg::dispatchProcedure(
       SIMCONNECT_RECV *pData,
       DWORD *cbData
   );

@@ -57,12 +57,11 @@ class simconnect::toolbox::blocks::SimConnectSinkFbw : public blockfactory::core
 
  private:
   struct CustomFlyByWireBlock {
-    bool enableTrackingMode;
-    bool enableAP;
-    double targetTheta;
-    double targetPhi;
-    double flightDirectoryTheta;
-    double flightDirectoryPhi;
+    bool enableAutopilot;
+    double flightDirectorTheta;
+    double autopilotTheta;
+    double flightDirectorPhi;
+    double autopilotPhi;
   };
 
   int configurationIndex = 0;
@@ -70,7 +69,6 @@ class simconnect::toolbox::blocks::SimConnectSinkFbw : public blockfactory::core
   HANDLE simConnectHandle = nullptr;
   CustomFlyByWireBlock data;
   CustomFlyByWireBlock lastData = {
-      false,
       false,
       -90,
       -90,
