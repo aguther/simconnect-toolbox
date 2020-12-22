@@ -20,6 +20,7 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/src/SimConnectSink
         ${CMAKE_SOURCE_DIR}/src/SimConnectSinkFbw
         ${CMAKE_SOURCE_DIR}/src/SimConnectSource
+        ${CMAKE_SOURCE_DIR}/src/SimConnectSourceEvents
         ${CMAKE_SOURCE_DIR}/src/SimConnectSourceFbw
         ${CMAKE_SOURCE_DIR}/src/SimConnectSourceFbwFg
 )
@@ -44,8 +45,9 @@ add_library(
         src/SimConnectSink/SimConnectSink.cpp
         src/SimConnectSinkFbw/SimConnectSinkFbw.cpp
         src/SimConnectSource/SimConnectSource.cpp
+        src/SimConnectSourceEvents/SimConnectSourceEvents.cpp
         src/SimConnectSourceFbw/SimConnectSourceFbw.cpp
-        src/SimConnectSourceFbwFg/SimConnectSourceFbwFg.cpp
+        src/SimConnectSourceFbwFg/SimConnectSourceEvents.cpp
 )
 
 set_target_properties(

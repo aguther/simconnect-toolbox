@@ -1,6 +1,7 @@
 #include "SimConnectInput.h"
 #include "SimConnectSink.h"
 #include "SimConnectSource.h"
+#include "SimConnectSourceEvents.h"
 #include "SimConnectSinkFbw.h"
 #include "SimConnectSourceFbw.h"
 #include "SimConnectSourceFbwFg.h"
@@ -26,6 +27,12 @@ SHLIBPP_DEFINE_SHARED_SUBCLASS(
 SHLIBPP_DEFINE_SHARED_SUBCLASS(
     SimConnectSource,
     simconnect::toolbox::blocks::SimConnectSource,
+    blockfactory::core::Block
+);
+
+SHLIBPP_DEFINE_SHARED_SUBCLASS(
+    SimConnectSourceEvents,
+    simconnect::toolbox::blocks::SimConnectSourceEvents,
     blockfactory::core::Block
 );
 
