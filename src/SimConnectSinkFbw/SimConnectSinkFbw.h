@@ -62,6 +62,7 @@ class simconnect::toolbox::blocks::SimConnectSinkFbw : public blockfactory::core
     double autopilotTheta;
     double flightDirectorPhi;
     double autopilotPhi;
+    double autopilotBeta;
   };
 
   int configurationIndex = 0;
@@ -70,6 +71,7 @@ class simconnect::toolbox::blocks::SimConnectSinkFbw : public blockfactory::core
   CustomFlyByWireBlock data;
   CustomFlyByWireBlock lastData = {
       false,
+      -90,
       -90,
       -90,
       -90,

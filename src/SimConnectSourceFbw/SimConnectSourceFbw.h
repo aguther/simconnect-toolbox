@@ -62,6 +62,7 @@ class simconnect::toolbox::blocks::SimConnectSourceFbw : public blockfactory::co
     double autopilotTheta;
     double flightDirectorPhi;
     double autopilotPhi;
+    double autopilotBeta;
   };
 
   int configurationIndex = 0;
