@@ -57,6 +57,11 @@ class simconnect::toolbox::blocks::SimConnectSourceFbwFg : public blockfactory::
 
  private:
   struct CustomFlyByWireBlock {
+    double flightPhase;
+    double V2;
+    double flightPlanAvailable;
+    double thrustReductionAltitude;
+    double thrustReductionAltitudeGoAround;
     double crossTrackError;
     double trackAngleError;
   };

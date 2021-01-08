@@ -63,6 +63,10 @@ class simconnect::toolbox::blocks::SimConnectSourceFbw : public blockfactory::co
     double flightDirectorPhi;
     double autopilotPhi;
     double autopilotBeta;
+    double fmaLateralMode;
+    double fmaLateralArmed;
+    double fmaVerticalMode;
+    double fmaVerticalArmed;
   };
 
   int configurationIndex = 0;

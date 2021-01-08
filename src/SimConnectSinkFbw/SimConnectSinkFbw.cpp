@@ -98,6 +98,26 @@ bool SimConnectSinkFbw::configureSizeAndPorts(
          {1},
          Port::DataType::DOUBLE}
     );
+    inputPortInfo.push_back(
+        {6,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {7,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {8,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {9,
+         {1},
+         Port::DataType::DOUBLE}
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -200,6 +220,30 @@ bool SimConnectSinkFbw::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     if (FAILED(result)) {
       bfError << "Failed to initialize client data";
@@ -219,7 +263,7 @@ bool SimConnectSinkFbw::output(
 ) {
   // vector for output signals
   std::vector<InputSignalPtr> inputSignals;
-  for (int kI = 0; kI < 6; ++kI) {
+  for (int kI = 0; kI < 10; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getInputPortSignal(kI);
     // check if output is ok
@@ -238,6 +282,10 @@ bool SimConnectSinkFbw::output(
   data.flightDirectorPhi = inputSignals[3]->get<double>(0);
   data.autopilotPhi = inputSignals[4]->get<double>(0);
   data.autopilotBeta = inputSignals[5]->get<double>(0);
+  data.fmaLateralMode = inputSignals[6]->get<double>(0);
+  data.fmaLateralArmed = inputSignals[7]->get<double>(0);
+  data.fmaVerticalMode = inputSignals[8]->get<double>(0);
+  data.fmaVerticalArmed = inputSignals[9]->get<double>(0);
 
   // only write when needed
   if (data.enableAutopilot != lastData.enableAutopilot
@@ -245,7 +293,11 @@ bool SimConnectSinkFbw::output(
       || data.autopilotTheta != lastData.autopilotTheta
       || data.flightDirectorPhi != lastData.flightDirectorPhi
       || data.autopilotPhi != lastData.autopilotPhi
-      || data.autopilotBeta != lastData.autopilotBeta) {
+      || data.autopilotBeta != lastData.autopilotBeta
+      || data.fmaLateralMode != lastData.fmaLateralMode
+      || data.fmaLateralArmed != lastData.fmaLateralArmed
+      || data.fmaVerticalMode != lastData.fmaVerticalMode
+      || data.fmaVerticalArmed != lastData.fmaVerticalArmed) {
     // write data to simconnect
     HRESULT result = SimConnect_SetClientData(
         simConnectHandle,

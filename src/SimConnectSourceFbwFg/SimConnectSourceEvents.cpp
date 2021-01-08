@@ -82,6 +82,41 @@ bool SimConnectSourceFbwFg::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
+    outputPortInfo.push_back(
+        {
+            2,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
+    outputPortInfo.push_back(
+        {
+            3,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
+    outputPortInfo.push_back(
+        {
+            4,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
+    outputPortInfo.push_back(
+        {
+            5,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
+    outputPortInfo.push_back(
+        {
+            6,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -160,6 +195,36 @@ bool SimConnectSourceFbwFg::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     result &= SimConnect_RequestClientData(
         simConnectHandle,
@@ -187,7 +252,7 @@ bool SimConnectSourceFbwFg::output(
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 2; ++kI) {
+  for (int kI = 0; kI < 7; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -203,8 +268,13 @@ bool SimConnectSourceFbwFg::output(
   processDispatch();
 
   // write output value to all signals
-  outputSignals[0]->set(0, data.crossTrackError);
-  outputSignals[1]->set(0, data.trackAngleError);
+  outputSignals[0]->set(0, data.flightPhase);
+  outputSignals[1]->set(0, data.V2);
+  outputSignals[2]->set(0, data.flightPlanAvailable);
+  outputSignals[3]->set(0, data.thrustReductionAltitude);
+  outputSignals[4]->set(0, data.thrustReductionAltitudeGoAround);
+  outputSignals[5]->set(0, data.crossTrackError);
+  outputSignals[6]->set(0, data.trackAngleError);
 
   // return result
   return true;
