@@ -14,7 +14,7 @@
  *     limitations under the License.
  */
 
-#include "SimConnectSourceFbw.h"
+#include "SimConnectSourceAutopilotEvents.h"
 
 #include <BlockFactory/Core/Log.h>
 #include <BlockFactory/Core/Parameter.h>
@@ -23,11 +23,11 @@
 using namespace blockfactory::core;
 using namespace simconnect::toolbox::blocks;
 
-unsigned SimConnectSourceFbw::numberOfParameters() {
+unsigned SimConnectSourceAutopilotEvents::numberOfParameters() {
   return Block::numberOfParameters() + 2;
 }
 
-bool SimConnectSourceFbw::parseParameters(
+bool SimConnectSourceAutopilotEvents::parseParameters(
     BlockInformation *blockInfo
 ) {
   // get base index
@@ -50,7 +50,7 @@ bool SimConnectSourceFbw::parseParameters(
   return blockInfo->parseParameters(m_parameters);
 }
 
-bool SimConnectSourceFbw::configureSizeAndPorts(
+bool SimConnectSourceAutopilotEvents::configureSizeAndPorts(
     BlockInformation *blockInfo
 ) {
   if (!Block::configureSizeAndPorts(blockInfo)) {
@@ -58,7 +58,7 @@ bool SimConnectSourceFbw::configureSizeAndPorts(
   }
 
   // parse the parameters
-  if (!SimConnectSourceFbw::parseParameters(blockInfo)) {
+  if (!SimConnectSourceAutopilotEvents::parseParameters(blockInfo)) {
     bfError << "Failed to parse parameters.";
     return false;
   }
@@ -117,27 +117,6 @@ bool SimConnectSourceFbw::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
-    outputPortInfo.push_back(
-        {
-            7,
-            {1},
-            Port::DataType::DOUBLE
-        }
-    );
-    outputPortInfo.push_back(
-        {
-            8,
-            {1},
-            Port::DataType::DOUBLE
-        }
-    );
-    outputPortInfo.push_back(
-        {
-            9,
-            {1},
-            Port::DataType::DOUBLE
-        }
-    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -152,7 +131,7 @@ bool SimConnectSourceFbw::configureSizeAndPorts(
   return true;
 }
 
-bool SimConnectSourceFbw::initialize(
+bool SimConnectSourceAutopilotEvents::initialize(
     BlockInformation *blockInfo
 ) {
   // the base Block class need to be initialized first
@@ -161,7 +140,7 @@ bool SimConnectSourceFbw::initialize(
   }
 
   // parse the parameters
-  if (!SimConnectSourceFbw::parseParameters(blockInfo)) {
+  if (!SimConnectSourceAutopilotEvents::parseParameters(blockInfo)) {
     bfError << "Failed to parse parameters.";
     return false;
   }
@@ -193,88 +172,23 @@ bool SimConnectSourceFbw::initialize(
   }
 
   try {
-    HRESULT result;
-    result = SimConnect_MapClientDataNameToID(
-      simConnectHandle, "A32NX_CLIENT_DATA_AUTOPILOT", 0);
+    bool boolResult = addEvent(0, "AP_MASTER", true);
+    boolResult &= addEvent(1, "AUTOPILOT_OFF", false);
+    boolResult &= addEvent(2, "HEADING_SLOT_INDEX_SET", false);
+    boolResult &= addEvent(3, "ALTITUDE_SLOT_INDEX_SET", false);
+    boolResult &= addEvent(4, "AP_PANEL_VS_ON", false);
+    boolResult &= addEvent(5, "AP_LOC_HOLD", false);
+    boolResult &= addEvent(6, "AP_LOC_HOLD_OFF", false);
+    boolResult &= addEvent(7, "AP_APR_HOLD_ON", false);
 
-    result &= SimConnect_CreateClientData(
+    HRESULT result = SimConnect_SetNotificationGroupPriority(
         simConnectHandle,
         0,
-        sizeof(data),
-        SIMCONNECT_CREATE_CLIENT_DATA_FLAG_DEFAULT
-    );
-
-    result &= SimConnect_AddToClientDataDefinition(
-        simConnectHandle,
-        0,
-        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_INT64
-    );
-    result &= SimConnect_AddToClientDataDefinition(
-        simConnectHandle,
-        0,
-        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_FLOAT64
-    );
-    result &= SimConnect_AddToClientDataDefinition(
-        simConnectHandle,
-        0,
-        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_FLOAT64
-    );
-    result &= SimConnect_AddToClientDataDefinition(
-        simConnectHandle,
-        0,
-        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_FLOAT64
-    );
-    result &= SimConnect_AddToClientDataDefinition(
-        simConnectHandle,
-        0,
-        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_FLOAT64
-    );
-    result &= SimConnect_AddToClientDataDefinition(
-        simConnectHandle,
-        0,
-        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_FLOAT64
-    );
-    result &= SimConnect_AddToClientDataDefinition(
-        simConnectHandle,
-        0,
-        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_FLOAT64
-    );
-    result &= SimConnect_AddToClientDataDefinition(
-        simConnectHandle,
-        0,
-        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_FLOAT64
-    );
-    result &= SimConnect_AddToClientDataDefinition(
-        simConnectHandle,
-        0,
-        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_FLOAT64
-    );
-    result &= SimConnect_AddToClientDataDefinition(
-        simConnectHandle,
-        0,
-        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+        SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE
     );
 
-    result &= SimConnect_RequestClientData(
-        simConnectHandle,
-        0,
-        0,
-        0,
-        SIMCONNECT_CLIENT_DATA_PERIOD_ON_SET
-    );
-
-    if (FAILED(result)) {
-      bfError << "Failed to initialize client data";
+    if (FAILED(result) || !boolResult) {
+      bfError << "Failed to initialize events";
       return false;
     }
 
@@ -286,12 +200,12 @@ bool SimConnectSourceFbw::initialize(
   return true;
 }
 
-bool SimConnectSourceFbw::output(
+bool SimConnectSourceAutopilotEvents::output(
     const BlockInformation *blockInfo
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 10; ++kI) {
+  for (int kI = 0; kI < 7; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -307,22 +221,28 @@ bool SimConnectSourceFbw::output(
   processDispatch();
 
   // write output value to all signals
-  outputSignals[0]->set(0, data.enableAutopilot);
-  outputSignals[1]->set(0, data.flightDirectorTheta);
-  outputSignals[2]->set(0, data.autopilotTheta);
-  outputSignals[3]->set(0, data.flightDirectorPhi);
-  outputSignals[4]->set(0, data.autopilotPhi);
-  outputSignals[5]->set(0, data.autopilotBeta);
-  outputSignals[6]->set(0, data.fmaLateralMode);
-  outputSignals[7]->set(0, data.fmaLateralArmed);
-  outputSignals[8]->set(0, data.fmaVerticalMode);
-  outputSignals[9]->set(0, data.fmaVerticalArmed);
+  outputSignals[0]->set(0, data.apMaster);
+  outputSignals[1]->set(0, data.apMasterOff);
+  outputSignals[2]->set(0, data.headingSlotIndexSet);
+  outputSignals[3]->set(0, data.altitudeSlotIndexSet);
+  outputSignals[4]->set(0, data.apPanelVsOn);
+  outputSignals[5]->set(0, data.apLocHold);
+  outputSignals[6]->set(0, data.apAprHold);
+
+  // reset signals
+  data.apMaster = 0;
+  data.apMasterOff = 0;
+  data.headingSlotIndexSet = 0;
+  data.altitudeSlotIndexSet = 0;
+  data.apPanelVsOn = 0;
+  data.apLocHold = 0;
+  data.apAprHold = 0;
 
   // return result
   return true;
 }
 
-bool SimConnectSourceFbw::terminate(
+bool SimConnectSourceAutopilotEvents::terminate(
     const BlockInformation *blockInfo
 ) {
   // disconnect
@@ -333,7 +253,21 @@ bool SimConnectSourceFbw::terminate(
   return true;
 }
 
-void SimConnectSourceFbw::processDispatch() {
+bool SimConnectSourceAutopilotEvents::addEvent(
+    int eventId,
+    const std::string &eventName,
+    bool shouldMask
+) {
+  if (FAILED(SimConnect_MapClientEventToSimEvent(simConnectHandle, eventId, eventName.c_str()))) {
+    return false;
+  }
+  if (FAILED(SimConnect_AddClientEventToNotificationGroup(simConnectHandle, 0, eventId, shouldMask ? 1 : 0))) {
+    return false;
+  }
+  return true;
+}
+
+void SimConnectSourceAutopilotEvents::processDispatch() {
   DWORD cbData;
   SIMCONNECT_RECV *pData;
   while (SUCCEEDED(SimConnect_GetNextDispatch(simConnectHandle, &pData, &cbData))) {
@@ -341,21 +275,53 @@ void SimConnectSourceFbw::processDispatch() {
   }
 }
 
-void SimConnectSourceFbw::dispatchProcedure(
+void SimConnectSourceAutopilotEvents::dispatchProcedure(
     SIMCONNECT_RECV *pData,
     DWORD *cbData
 ) {
   switch (pData->dwID) {
-    case SIMCONNECT_RECV_ID_CLIENT_DATA: {
-      auto *event = (SIMCONNECT_RECV_CLIENT_DATA *) pData;
-      switch (event->dwRequestID) {
-        case 0:
-          data = *reinterpret_cast<CustomFlyByWireBlock *>(&event->dwData);
+    case SIMCONNECT_RECV_ID_EVENT: {
+      auto *event = (SIMCONNECT_RECV_EVENT *) pData;
+      switch (event->uEventID) {
+        case 0: {
+          data.apMaster = 1;
           break;
+        }
+
+        case 1: {
+          data.apMasterOff = 1;
+          break;
+        }
+
+        case 2: {
+          data.headingSlotIndexSet = event->dwData;
+          break;
+        }
+
+        case 3: {
+          data.altitudeSlotIndexSet = event->dwData;
+          break;
+        }
+
+        case 4: {
+          data.apPanelVsOn = 1;
+          break;
+        }
+
+        case 5: {
+          data.apLocHold = 1;
+          break;
+        }
+
+        case 6:
+        case 7: {
+          data.apAprHold = 1;
+          break;
+        }
 
         default:
           break;
-      }
+      };
       break;
     }
 

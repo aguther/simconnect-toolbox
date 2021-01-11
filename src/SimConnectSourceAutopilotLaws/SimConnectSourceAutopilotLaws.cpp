@@ -14,7 +14,7 @@
  *     limitations under the License.
  */
 
-#include "SimConnectSourceEvents.h"
+#include "SimConnectSourceAutopilotLaws.h"
 
 #include <BlockFactory/Core/Log.h>
 #include <BlockFactory/Core/Parameter.h>
@@ -23,11 +23,11 @@
 using namespace blockfactory::core;
 using namespace simconnect::toolbox::blocks;
 
-unsigned SimConnectSourceEvents::numberOfParameters() {
+unsigned SimConnectSourceAutopilotLaws::numberOfParameters() {
   return Block::numberOfParameters() + 2;
 }
 
-bool SimConnectSourceEvents::parseParameters(
+bool SimConnectSourceAutopilotLaws::parseParameters(
     BlockInformation *blockInfo
 ) {
   // get base index
@@ -50,7 +50,7 @@ bool SimConnectSourceEvents::parseParameters(
   return blockInfo->parseParameters(m_parameters);
 }
 
-bool SimConnectSourceEvents::configureSizeAndPorts(
+bool SimConnectSourceAutopilotLaws::configureSizeAndPorts(
     BlockInformation *blockInfo
 ) {
   if (!Block::configureSizeAndPorts(blockInfo)) {
@@ -58,7 +58,7 @@ bool SimConnectSourceEvents::configureSizeAndPorts(
   }
 
   // parse the parameters
-  if (!SimConnectSourceEvents::parseParameters(blockInfo)) {
+  if (!SimConnectSourceAutopilotLaws::parseParameters(blockInfo)) {
     bfError << "Failed to parse parameters.";
     return false;
   }
@@ -110,13 +110,6 @@ bool SimConnectSourceEvents::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
-    outputPortInfo.push_back(
-        {
-            6,
-            {1},
-            Port::DataType::DOUBLE
-        }
-    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -131,7 +124,7 @@ bool SimConnectSourceEvents::configureSizeAndPorts(
   return true;
 }
 
-bool SimConnectSourceEvents::initialize(
+bool SimConnectSourceAutopilotLaws::initialize(
     BlockInformation *blockInfo
 ) {
   // the base Block class need to be initialized first
@@ -140,7 +133,7 @@ bool SimConnectSourceEvents::initialize(
   }
 
   // parse the parameters
-  if (!SimConnectSourceEvents::parseParameters(blockInfo)) {
+  if (!SimConnectSourceAutopilotLaws::parseParameters(blockInfo)) {
     bfError << "Failed to parse parameters.";
     return false;
   }
@@ -172,23 +165,64 @@ bool SimConnectSourceEvents::initialize(
   }
 
   try {
-    bool boolResult = addEvent(0, "AP_MASTER", true);
-    boolResult &= addEvent(1, "AUTOPILOT_OFF", false);
-    boolResult &= addEvent(2, "HEADING_SLOT_INDEX_SET", false);
-    boolResult &= addEvent(3, "ALTITUDE_SLOT_INDEX_SET", false);
-    boolResult &= addEvent(4, "AP_PANEL_VS_ON", false);
-    boolResult &= addEvent(5, "AP_LOC_HOLD", false);
-    boolResult &= addEvent(6, "AP_LOC_HOLD_OFF", false);
-    boolResult &= addEvent(7, "AP_APR_HOLD_ON", false);
+    HRESULT result;
+    result = SimConnect_MapClientDataNameToID(
+      simConnectHandle, "A32NX_CLIENT_DATA_AUTOPILOT_LAWS", 0);
 
-    HRESULT result = SimConnect_SetNotificationGroupPriority(
+    result &= SimConnect_CreateClientData(
         simConnectHandle,
         0,
-        SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE
+        sizeof(data),
+        SIMCONNECT_CREATE_CLIENT_DATA_FLAG_DEFAULT
     );
 
-    if (FAILED(result) || !boolResult) {
-      bfError << "Failed to initialize events";
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_INT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+
+    result &= SimConnect_RequestClientData(
+        simConnectHandle,
+        0,
+        0,
+        0,
+        SIMCONNECT_CLIENT_DATA_PERIOD_ON_SET
+    );
+
+    if (FAILED(result)) {
+      bfError << "Failed to initialize client data";
       return false;
     }
 
@@ -200,12 +234,12 @@ bool SimConnectSourceEvents::initialize(
   return true;
 }
 
-bool SimConnectSourceEvents::output(
+bool SimConnectSourceAutopilotLaws::output(
     const BlockInformation *blockInfo
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 7; ++kI) {
+  for (int kI = 0; kI < 6; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -221,28 +255,18 @@ bool SimConnectSourceEvents::output(
   processDispatch();
 
   // write output value to all signals
-  outputSignals[0]->set(0, data.apMaster);
-  outputSignals[1]->set(0, data.apMasterOff);
-  outputSignals[2]->set(0, data.headingSlotIndexSet);
-  outputSignals[3]->set(0, data.altitudeSlotIndexSet);
-  outputSignals[4]->set(0, data.apPanelVsOn);
-  outputSignals[5]->set(0, data.apLocHold);
-  outputSignals[6]->set(0, data.apAprHold);
-
-  // reset signals
-  data.apMaster = 0;
-  data.apMasterOff = 0;
-  data.headingSlotIndexSet = 0;
-  data.altitudeSlotIndexSet = 0;
-  data.apPanelVsOn = 0;
-  data.apLocHold = 0;
-  data.apAprHold = 0;
+  outputSignals[0]->set(0, data.enableAutopilot);
+  outputSignals[1]->set(0, data.flightDirectorTheta);
+  outputSignals[2]->set(0, data.autopilotTheta);
+  outputSignals[3]->set(0, data.flightDirectorPhi);
+  outputSignals[4]->set(0, data.autopilotPhi);
+  outputSignals[5]->set(0, data.autopilotBeta);
 
   // return result
   return true;
 }
 
-bool SimConnectSourceEvents::terminate(
+bool SimConnectSourceAutopilotLaws::terminate(
     const BlockInformation *blockInfo
 ) {
   // disconnect
@@ -253,21 +277,7 @@ bool SimConnectSourceEvents::terminate(
   return true;
 }
 
-bool SimConnectSourceEvents::addEvent(
-    int eventId,
-    const std::string &eventName,
-    bool shouldMask
-) {
-  if (FAILED(SimConnect_MapClientEventToSimEvent(simConnectHandle, eventId, eventName.c_str()))) {
-    return false;
-  }
-  if (FAILED(SimConnect_AddClientEventToNotificationGroup(simConnectHandle, 0, eventId, shouldMask ? 1 : 0))) {
-    return false;
-  }
-  return true;
-}
-
-void SimConnectSourceEvents::processDispatch() {
+void SimConnectSourceAutopilotLaws::processDispatch() {
   DWORD cbData;
   SIMCONNECT_RECV *pData;
   while (SUCCEEDED(SimConnect_GetNextDispatch(simConnectHandle, &pData, &cbData))) {
@@ -275,53 +285,21 @@ void SimConnectSourceEvents::processDispatch() {
   }
 }
 
-void SimConnectSourceEvents::dispatchProcedure(
+void SimConnectSourceAutopilotLaws::dispatchProcedure(
     SIMCONNECT_RECV *pData,
     DWORD *cbData
 ) {
   switch (pData->dwID) {
-    case SIMCONNECT_RECV_ID_EVENT: {
-      auto *event = (SIMCONNECT_RECV_EVENT *) pData;
-      switch (event->uEventID) {
-        case 0: {
-          data.apMaster = 1;
+    case SIMCONNECT_RECV_ID_CLIENT_DATA: {
+      auto *event = (SIMCONNECT_RECV_CLIENT_DATA *) pData;
+      switch (event->dwRequestID) {
+        case 0:
+          data = *reinterpret_cast<AutopilotLaws *>(&event->dwData);
           break;
-        }
-
-        case 1: {
-          data.apMasterOff = 1;
-          break;
-        }
-
-        case 2: {
-          data.headingSlotIndexSet = event->dwData;
-          break;
-        }
-
-        case 3: {
-          data.altitudeSlotIndexSet = event->dwData;
-          break;
-        }
-
-        case 4: {
-          data.apPanelVsOn = 1;
-          break;
-        }
-
-        case 5: {
-          data.apLocHold = 1;
-          break;
-        }
-
-        case 6:
-        case 7: {
-          data.apAprHold = 1;
-          break;
-        }
 
         default:
           break;
-      };
+      }
       break;
     }
 

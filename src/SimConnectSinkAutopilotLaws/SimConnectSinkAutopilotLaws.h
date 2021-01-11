@@ -22,16 +22,16 @@
 #include <BlockFactory/Core/BlockInformation.h>
 
 namespace simconnect::toolbox::blocks {
-class SimConnectSourceEvents;
+class SimConnectSinkAutopilotLaws;
 }
 
-class simconnect::toolbox::blocks::SimConnectSourceEvents : public blockfactory::core::Block {
+class simconnect::toolbox::blocks::SimConnectSinkAutopilotLaws : public blockfactory::core::Block {
  public:
   static const std::string ClassName;
 
-  SimConnectSourceEvents() = default;
+  SimConnectSinkAutopilotLaws() = default;
 
-  ~SimConnectSourceEvents() override = default;
+  ~SimConnectSinkAutopilotLaws() override = default;
 
   unsigned numberOfParameters() override;
 
@@ -56,31 +56,25 @@ class simconnect::toolbox::blocks::SimConnectSourceEvents : public blockfactory:
   ) override;
 
  private:
-  struct EventTriggeredState {
-    double apMaster;
-    double apMasterOff;
-    double headingSlotIndexSet;
-    double altitudeSlotIndexSet;
-    double apPanelVsOn;
-    double apLocHold;
-    double apAprHold;
+  struct AutopilotLaws {
+    unsigned long long enableAutopilot;
+    double flightDirectorTheta;
+    double autopilotTheta;
+    double flightDirectorPhi;
+    double autopilotPhi;
+    double autopilotBeta;
   };
 
   int configurationIndex = 0;
   std::string connectionName;
   HANDLE simConnectHandle = nullptr;
-  EventTriggeredState data;
-
-  bool addEvent(
-      int eventId,
-      const std::string &eventName,
-      bool shouldMask = false
-  );
-
-  void processDispatch();
-
-  void SimConnectSourceEvents::dispatchProcedure(
-      SIMCONNECT_RECV *pData,
-      DWORD *cbData
-  );
+  AutopilotLaws data;
+  AutopilotLaws lastData = {
+      false,
+      -90,
+      -90,
+      -90,
+      -90,
+      -90
+  };
 };

@@ -22,16 +22,16 @@
 #include <BlockFactory/Core/BlockInformation.h>
 
 namespace simconnect::toolbox::blocks {
-class SimConnectSinkFbw;
+class SimConnectSourceAutopilotEvents;
 }
 
-class simconnect::toolbox::blocks::SimConnectSinkFbw : public blockfactory::core::Block {
+class simconnect::toolbox::blocks::SimConnectSourceAutopilotEvents : public blockfactory::core::Block {
  public:
   static const std::string ClassName;
 
-  SimConnectSinkFbw() = default;
+  SimConnectSourceAutopilotEvents() = default;
 
-  ~SimConnectSinkFbw() override = default;
+  ~SimConnectSourceAutopilotEvents() override = default;
 
   unsigned numberOfParameters() override;
 
@@ -56,29 +56,31 @@ class simconnect::toolbox::blocks::SimConnectSinkFbw : public blockfactory::core
   ) override;
 
  private:
-  struct CustomFlyByWireBlock {
-    bool enableAutopilot;
-    double flightDirectorTheta;
-    double autopilotTheta;
-    double flightDirectorPhi;
-    double autopilotPhi;
-    double autopilotBeta;
-    double fmaLateralMode;
-    double fmaLateralArmed;
-    double fmaVerticalMode;
-    double fmaVerticalArmed;
+  struct EventTriggeredState {
+    double apMaster;
+    double apMasterOff;
+    double headingSlotIndexSet;
+    double altitudeSlotIndexSet;
+    double apPanelVsOn;
+    double apLocHold;
+    double apAprHold;
   };
 
   int configurationIndex = 0;
   std::string connectionName;
   HANDLE simConnectHandle = nullptr;
-  CustomFlyByWireBlock data;
-  CustomFlyByWireBlock lastData = {
-      false,
-      -90,
-      -90,
-      -90,
-      -90,
-      -90
-  };
+  EventTriggeredState data = {};
+
+  bool addEvent(
+      int eventId,
+      const std::string &eventName,
+      bool shouldMask = false
+  );
+
+  void processDispatch();
+
+  void SimConnectSourceAutopilotEvents::dispatchProcedure(
+      SIMCONNECT_RECV *pData,
+      DWORD *cbData
+  );
 };

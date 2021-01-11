@@ -22,16 +22,16 @@
 #include <BlockFactory/Core/BlockInformation.h>
 
 namespace simconnect::toolbox::blocks {
-class SimConnectSourceFbwFg;
+class SimConnectSourceAutopilotStateMachine;
 }
 
-class simconnect::toolbox::blocks::SimConnectSourceFbwFg : public blockfactory::core::Block {
+class simconnect::toolbox::blocks::SimConnectSourceAutopilotStateMachine : public blockfactory::core::Block {
  public:
   static const std::string ClassName;
 
-  SimConnectSourceFbwFg() = default;
+  SimConnectSourceAutopilotStateMachine() = default;
 
-  ~SimConnectSourceFbwFg() override = default;
+  ~SimConnectSourceAutopilotStateMachine() override = default;
 
   unsigned numberOfParameters() override;
 
@@ -56,24 +56,28 @@ class simconnect::toolbox::blocks::SimConnectSourceFbwFg : public blockfactory::
   ) override;
 
  private:
-  struct CustomFlyByWireBlock {
-    double flightPhase;
-    double V2;
-    double flightPlanAvailable;
-    double thrustReductionAltitude;
-    double thrustReductionAltitudeGoAround;
-    double crossTrackError;
-    double trackAngleError;
+  struct AutopilotStateMachine {
+    unsigned long long enabled;
+    double lateral_law;
+    double lateral_mode;
+    double lateral_mode_armed;
+    double vertical_law;
+    double vertical_mode;
+    double vertical_mode_armed;
+    double Psi_c_deg;
+    double H_c_ft;
+    double H_dot_c_fpm;
+    double FPA_c_deg;
   };
 
   int configurationIndex = 0;
   std::string connectionName;
   HANDLE simConnectHandle = nullptr;
-  CustomFlyByWireBlock data;
+  AutopilotStateMachine data = {};
 
   void processDispatch();
 
-  void SimConnectSourceFbwFg::dispatchProcedure(
+  void SimConnectSourceAutopilotStateMachine::dispatchProcedure(
       SIMCONNECT_RECV *pData,
       DWORD *cbData
   );

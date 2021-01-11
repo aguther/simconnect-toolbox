@@ -1,10 +1,12 @@
 #include "SimConnectInput.h"
 #include "SimConnectSink.h"
+#include "SimConnectSinkAutopilotLaws.h"
+#include "SimConnectSinkAutopilotStateMachine.h"
 #include "SimConnectSource.h"
-#include "SimConnectSourceEvents.h"
-#include "SimConnectSinkFbw.h"
-#include "SimConnectSourceFbw.h"
-#include "SimConnectSourceFbwFg.h"
+#include "SimConnectSourceAutopilotEvents.h"
+#include "SimConnectSourceAutopilotLaws.h"
+#include "SimConnectSourceAutopilotStateMachine.h"
+#include "SimConnectSourceLocalVariables.h"
 
 #pragma warning(disable : 4267)
 #pragma warning(disable : 4996)
@@ -25,31 +27,43 @@ SHLIBPP_DEFINE_SHARED_SUBCLASS(
 );
 
 SHLIBPP_DEFINE_SHARED_SUBCLASS(
+    SimConnectSinkAutopilotLaws,
+    simconnect::toolbox::blocks::SimConnectSinkAutopilotLaws,
+    blockfactory::core::Block
+);
+
+SHLIBPP_DEFINE_SHARED_SUBCLASS(
+    SimConnectSinkAutopilotStateMachine,
+    simconnect::toolbox::blocks::SimConnectSinkAutopilotStateMachine,
+    blockfactory::core::Block
+);
+
+SHLIBPP_DEFINE_SHARED_SUBCLASS(
     SimConnectSource,
     simconnect::toolbox::blocks::SimConnectSource,
     blockfactory::core::Block
 );
 
 SHLIBPP_DEFINE_SHARED_SUBCLASS(
-    SimConnectSourceEvents,
-    simconnect::toolbox::blocks::SimConnectSourceEvents,
+    SimConnectSourceAutopilotEvents,
+    simconnect::toolbox::blocks::SimConnectSourceAutopilotEvents,
     blockfactory::core::Block
 );
 
 SHLIBPP_DEFINE_SHARED_SUBCLASS(
-    SimConnectSinkFbw,
-    simconnect::toolbox::blocks::SimConnectSinkFbw,
+    SimConnectSourceAutopilotLaws,
+    simconnect::toolbox::blocks::SimConnectSourceAutopilotLaws,
     blockfactory::core::Block
 );
 
 SHLIBPP_DEFINE_SHARED_SUBCLASS(
-    SimConnectSourceFbw,
-    simconnect::toolbox::blocks::SimConnectSourceFbw,
+    SimConnectSourceAutopilotStateMachine,
+    simconnect::toolbox::blocks::SimConnectSourceAutopilotStateMachine,
     blockfactory::core::Block
 );
 
 SHLIBPP_DEFINE_SHARED_SUBCLASS(
-    SimConnectSourceFbwFg,
-    simconnect::toolbox::blocks::SimConnectSourceFbwFg,
+    SimConnectSourceLocalVariables,
+    simconnect::toolbox::blocks::SimConnectSourceLocalVariables,
     blockfactory::core::Block
 );

@@ -18,11 +18,13 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/sim-connect-interface/include
         ${CMAKE_SOURCE_DIR}/src/SimConnectInput
         ${CMAKE_SOURCE_DIR}/src/SimConnectSink
-        ${CMAKE_SOURCE_DIR}/src/SimConnectSinkFbw
+        ${CMAKE_SOURCE_DIR}/src/SimConnectSinkAutopilotLaws
+        ${CMAKE_SOURCE_DIR}/src/SimConnectSinkAutopilotStateMachine
         ${CMAKE_SOURCE_DIR}/src/SimConnectSource
-        ${CMAKE_SOURCE_DIR}/src/SimConnectSourceEvents
-        ${CMAKE_SOURCE_DIR}/src/SimConnectSourceFbw
-        ${CMAKE_SOURCE_DIR}/src/SimConnectSourceFbwFg
+        ${CMAKE_SOURCE_DIR}/src/SimConnectSourceAutopilotEvents
+        ${CMAKE_SOURCE_DIR}/src/SimConnectSourceAutopilotLaws
+        ${CMAKE_SOURCE_DIR}/src/SimConnectSourceAutopilotStateMachine
+        ${CMAKE_SOURCE_DIR}/src/SimConnectSourceLocalVariables
 )
 
 link_directories(
@@ -43,11 +45,13 @@ add_library(
         src/Factory/Factory.cpp
         src/SimConnectInput/SimConnectInput.cpp
         src/SimConnectSink/SimConnectSink.cpp
-        src/SimConnectSinkFbw/SimConnectSinkFbw.cpp
+        src/SimConnectSinkAutopilotLaws/SimConnectSinkAutopilotLaws.cpp
+        src/SimConnectSinkAutopilotStateMachine/SimConnectSinkAutopilotStateMachine.cpp
         src/SimConnectSource/SimConnectSource.cpp
-        src/SimConnectSourceEvents/SimConnectSourceEvents.cpp
-        src/SimConnectSourceFbw/SimConnectSourceFbw.cpp
-        src/SimConnectSourceFbwFg/SimConnectSourceEvents.cpp
+        src/SimConnectSourceAutopilotEvents/SimConnectSourceAutopilotEvents.cpp
+        src/SimConnectSourceAutopilotLaws/SimConnectSourceAutopilotLaws.cpp
+        src/SimConnectSourceAutopilotStateMachine/SimConnectSourceAutopilotStateMachine.cpp
+        src/SimConnectSourceLocalVariables/SimConnectSourceLocalVariables.cpp
 )
 
 set_target_properties(

@@ -14,7 +14,7 @@
  *     limitations under the License.
  */
 
-#include "SimConnectSourceFbwFg.h"
+#include "SimConnectSinkAutopilotStateMachine.h"
 
 #include <BlockFactory/Core/Log.h>
 #include <BlockFactory/Core/Parameter.h>
@@ -23,11 +23,11 @@
 using namespace blockfactory::core;
 using namespace simconnect::toolbox::blocks;
 
-unsigned SimConnectSourceFbwFg::numberOfParameters() {
+unsigned SimConnectSinkAutopilotStateMachine::numberOfParameters() {
   return Block::numberOfParameters() + 2;
 }
 
-bool SimConnectSourceFbwFg::parseParameters(
+bool SimConnectSinkAutopilotStateMachine::parseParameters(
     BlockInformation *blockInfo
 ) {
   // get base index
@@ -50,7 +50,7 @@ bool SimConnectSourceFbwFg::parseParameters(
   return blockInfo->parseParameters(m_parameters);
 }
 
-bool SimConnectSourceFbwFg::configureSizeAndPorts(
+bool SimConnectSinkAutopilotStateMachine::configureSizeAndPorts(
     BlockInformation *blockInfo
 ) {
   if (!Block::configureSizeAndPorts(blockInfo)) {
@@ -58,7 +58,7 @@ bool SimConnectSourceFbwFg::configureSizeAndPorts(
   }
 
   // parse the parameters
-  if (!SimConnectSourceFbwFg::parseParameters(blockInfo)) {
+  if (!SimConnectSinkAutopilotStateMachine::parseParameters(blockInfo)) {
     bfError << "Failed to parse parameters.";
     return false;
   }
@@ -68,54 +68,60 @@ bool SimConnectSourceFbwFg::configureSizeAndPorts(
 
   // get output count
   try {
-    outputPortInfo.push_back(
-        {
-            0,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {0,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            1,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {1,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            2,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {2,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            3,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {3,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            4,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {4,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            5,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {5,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            6,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {6,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {7,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {8,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {9,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {10,
+         {1},
+         Port::DataType::DOUBLE}
     );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
@@ -131,7 +137,7 @@ bool SimConnectSourceFbwFg::configureSizeAndPorts(
   return true;
 }
 
-bool SimConnectSourceFbwFg::initialize(
+bool SimConnectSinkAutopilotStateMachine::initialize(
     BlockInformation *blockInfo
 ) {
   // the base Block class need to be initialized first
@@ -140,7 +146,7 @@ bool SimConnectSourceFbwFg::initialize(
   }
 
   // parse the parameters
-  if (!SimConnectSourceFbwFg::parseParameters(blockInfo)) {
+  if (!SimConnectSinkAutopilotStateMachine::parseParameters(blockInfo)) {
     bfError << "Failed to parse parameters.";
     return false;
   }
@@ -172,9 +178,9 @@ bool SimConnectSourceFbwFg::initialize(
   }
 
   try {
-    HRESULT result;
-    result = SimConnect_MapClientDataNameToID(
-        simConnectHandle, "A32NX_CLIENT_DATA_FLIGHT_GUIDANCE", 0);
+    HRESULT result = true;
+    result &= SimConnect_MapClientDataNameToID(
+        simConnectHandle, "A32NX_CLIENT_DATA_AUTOPILOT_STATE_MACHINE", 0);
 
     result &= SimConnect_CreateClientData(
         simConnectHandle,
@@ -187,7 +193,7 @@ bool SimConnectSourceFbwFg::initialize(
         simConnectHandle,
         0,
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+        SIMCONNECT_CLIENTDATATYPE_INT64
     );
     result &= SimConnect_AddToClientDataDefinition(
         simConnectHandle,
@@ -225,13 +231,29 @@ bool SimConnectSourceFbwFg::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
-
-    result &= SimConnect_RequestClientData(
+    result &= SimConnect_AddToClientDataDefinition(
         simConnectHandle,
         0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
         0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
         0,
-        SIMCONNECT_CLIENT_DATA_PERIOD_ON_SET
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
 
     if (FAILED(result)) {
@@ -247,40 +269,74 @@ bool SimConnectSourceFbwFg::initialize(
   return true;
 }
 
-bool SimConnectSourceFbwFg::output(
+bool SimConnectSinkAutopilotStateMachine::output(
     const BlockInformation *blockInfo
 ) {
   // vector for output signals
-  std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 7; ++kI) {
+  std::vector<InputSignalPtr> inputSignals;
+  for (int kI = 0; kI < 11; ++kI) {
     // get output signal
-    auto outputSignal = blockInfo->getOutputPortSignal(kI);
+    auto outputSignal = blockInfo->getInputPortSignal(kI);
     // check if output is ok
     if (!outputSignal) {
       bfError << "Signals not valid";
       return false;
     }
     // store signal
-    outputSignals.emplace_back(outputSignal);
+    inputSignals.emplace_back(outputSignal);
   }
 
-  // get data from simconnect
-  processDispatch();
-
   // write output value to all signals
-  outputSignals[0]->set(0, data.flightPhase);
-  outputSignals[1]->set(0, data.V2);
-  outputSignals[2]->set(0, data.flightPlanAvailable);
-  outputSignals[3]->set(0, data.thrustReductionAltitude);
-  outputSignals[4]->set(0, data.thrustReductionAltitudeGoAround);
-  outputSignals[5]->set(0, data.crossTrackError);
-  outputSignals[6]->set(0, data.trackAngleError);
+  data.enabled = inputSignals[0]->get<double>(0) != 0;
+  data.lateral_law = inputSignals[1]->get<double>(0);
+  data.lateral_mode = inputSignals[2]->get<double>(0);
+  data.lateral_mode_armed = inputSignals[3]->get<double>(0);
+  data.vertical_law = inputSignals[4]->get<double>(0);
+  data.vertical_mode = inputSignals[5]->get<double>(0);
+  data.vertical_mode_armed = inputSignals[6]->get<double>(0);
+  data.Psi_c_deg = inputSignals[7]->get<double>(0);
+  data.H_c_ft = inputSignals[8]->get<double>(0);
+  data.H_dot_c_fpm = inputSignals[9]->get<double>(0);
+  data.FPA_c_deg = inputSignals[10]->get<double>(0);
+
+  // only write when needed
+  if (data.enabled != lastData.enabled
+      || data.lateral_law != lastData.lateral_law
+      || data.lateral_mode != lastData.lateral_mode
+      || data.lateral_mode_armed != lastData.lateral_mode_armed
+      || data.vertical_law != lastData.vertical_law
+      || data.vertical_mode != lastData.vertical_mode
+      || data.vertical_mode_armed != lastData.vertical_mode_armed
+      || data.Psi_c_deg != lastData.Psi_c_deg
+      || data.H_c_ft != lastData.H_c_ft
+      || data.H_dot_c_fpm != lastData.H_dot_c_fpm
+      || data.FPA_c_deg != lastData.FPA_c_deg) {
+    // write data to simconnect
+    HRESULT result = SimConnect_SetClientData(
+        simConnectHandle,
+        0,
+        0,
+        SIMCONNECT_CLIENT_DATA_SET_FLAG_DEFAULT,
+        0,
+        sizeof(data),
+        &data
+    );
+
+    // check result
+    if (FAILED(result)) {
+      bfError << "Failed to write to SimConnect";
+      return false;
+    }
+
+    // remember new settings
+    lastData = data;
+  }
 
   // return result
   return true;
 }
 
-bool SimConnectSourceFbwFg::terminate(
+bool SimConnectSinkAutopilotStateMachine::terminate(
     const BlockInformation *blockInfo
 ) {
   // disconnect
@@ -289,35 +345,4 @@ bool SimConnectSourceFbwFg::terminate(
 
   // success
   return true;
-}
-
-void SimConnectSourceFbwFg::processDispatch() {
-  DWORD cbData;
-  SIMCONNECT_RECV *pData;
-  while (SUCCEEDED(SimConnect_GetNextDispatch(simConnectHandle, &pData, &cbData))) {
-    dispatchProcedure(pData, &cbData);
-  }
-}
-
-void SimConnectSourceFbwFg::dispatchProcedure(
-    SIMCONNECT_RECV *pData,
-    DWORD *cbData
-) {
-  switch (pData->dwID) {
-    case SIMCONNECT_RECV_ID_CLIENT_DATA: {
-      auto *event = (SIMCONNECT_RECV_CLIENT_DATA *) pData;
-      switch (event->dwRequestID) {
-        case 0:
-          data = *reinterpret_cast<CustomFlyByWireBlock *>(&event->dwData);
-          break;
-
-        default:
-          break;
-      }
-      break;
-    }
-
-    default:
-      break;
-  }
 }
