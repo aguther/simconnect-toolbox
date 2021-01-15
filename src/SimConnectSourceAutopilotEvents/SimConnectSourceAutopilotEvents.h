@@ -57,8 +57,9 @@ class simconnect::toolbox::blocks::SimConnectSourceAutopilotEvents : public bloc
 
  private:
   struct EventTriggeredState {
-    double apMaster;
-    double apMasterOff;
+    double ap_1;
+    double ap_2;
+    double apOff;
     double headingSlotIndexSet;
     double altitudeSlotIndexSet;
     double apPanelVsOn;

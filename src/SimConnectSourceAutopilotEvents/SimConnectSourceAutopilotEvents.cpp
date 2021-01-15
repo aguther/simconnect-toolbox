@@ -117,6 +117,13 @@ bool SimConnectSourceAutopilotEvents::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
+    outputPortInfo.push_back(
+        {
+            7,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -172,14 +179,14 @@ bool SimConnectSourceAutopilotEvents::initialize(
   }
 
   try {
-    bool boolResult = addEvent(0, "AP_MASTER", true);
-    boolResult &= addEvent(1, "AUTOPILOT_OFF", false);
-    boolResult &= addEvent(2, "HEADING_SLOT_INDEX_SET", false);
-    boolResult &= addEvent(3, "ALTITUDE_SLOT_INDEX_SET", false);
-    boolResult &= addEvent(4, "AP_PANEL_VS_ON", false);
-    boolResult &= addEvent(5, "AP_LOC_HOLD", false);
-    boolResult &= addEvent(6, "AP_LOC_HOLD_OFF", false);
-    boolResult &= addEvent(7, "AP_APR_HOLD_ON", false);
+    bool boolResult = addEvent(0, "A32NX.FCU_AP_1_PUSH", true);
+    boolResult &= addEvent(1, "A32NX.FCU_AP_2_PUSH", false);
+    boolResult &= addEvent(2, "AUTOPILOT_OFF", false);
+    boolResult &= addEvent(3, "HEADING_SLOT_INDEX_SET", false);
+    boolResult &= addEvent(4, "ALTITUDE_SLOT_INDEX_SET", false);
+    boolResult &= addEvent(5, "AP_PANEL_VS_ON", false);
+    boolResult &= addEvent(6, "A32NX.FCU_LOC_PUSH", false);
+    boolResult &= addEvent(7, "A32NX.FCU_APPR_PUSH", false);
 
     HRESULT result = SimConnect_SetNotificationGroupPriority(
         simConnectHandle,
@@ -205,7 +212,7 @@ bool SimConnectSourceAutopilotEvents::output(
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 7; ++kI) {
+  for (int kI = 0; kI < 8; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -221,17 +228,19 @@ bool SimConnectSourceAutopilotEvents::output(
   processDispatch();
 
   // write output value to all signals
-  outputSignals[0]->set(0, data.apMaster);
-  outputSignals[1]->set(0, data.apMasterOff);
-  outputSignals[2]->set(0, data.headingSlotIndexSet);
-  outputSignals[3]->set(0, data.altitudeSlotIndexSet);
-  outputSignals[4]->set(0, data.apPanelVsOn);
-  outputSignals[5]->set(0, data.apLocHold);
-  outputSignals[6]->set(0, data.apAprHold);
+  outputSignals[0]->set(0, data.ap_1);
+  outputSignals[1]->set(0, data.ap_2);
+  outputSignals[2]->set(0, data.apOff);
+  outputSignals[3]->set(0, data.headingSlotIndexSet);
+  outputSignals[4]->set(0, data.altitudeSlotIndexSet);
+  outputSignals[5]->set(0, data.apPanelVsOn);
+  outputSignals[6]->set(0, data.apLocHold);
+  outputSignals[7]->set(0, data.apAprHold);
 
   // reset signals
-  data.apMaster = 0;
-  data.apMasterOff = 0;
+  data.ap_1 = 0;
+  data.ap_2 = 0;
+  data.apOff = 0;
   data.headingSlotIndexSet = 0;
   data.altitudeSlotIndexSet = 0;
   data.apPanelVsOn = 0;
@@ -284,36 +293,40 @@ void SimConnectSourceAutopilotEvents::dispatchProcedure(
       auto *event = (SIMCONNECT_RECV_EVENT *) pData;
       switch (event->uEventID) {
         case 0: {
-          data.apMaster = 1;
+          data.ap_1 = 1;
           break;
         }
 
         case 1: {
-          data.apMasterOff = 1;
+          data.ap_2 = 1;
           break;
         }
 
         case 2: {
-          data.headingSlotIndexSet = event->dwData;
+          data.apOff = 1;
           break;
         }
 
         case 3: {
-          data.altitudeSlotIndexSet = event->dwData;
+          data.headingSlotIndexSet = event->dwData;
           break;
         }
 
         case 4: {
-          data.apPanelVsOn = 1;
+          data.altitudeSlotIndexSet = event->dwData;
           break;
         }
 
         case 5: {
+          data.apPanelVsOn = 1;
+          break;
+        }
+
+        case 6: {
           data.apLocHold = 1;
           break;
         }
 
-        case 6:
         case 7: {
           data.apAprHold = 1;
           break;
