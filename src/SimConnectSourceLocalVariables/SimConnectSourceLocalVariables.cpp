@@ -131,13 +131,6 @@ bool SimConnectSourceLocalVariables::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
-    outputPortInfo.push_back(
-        {
-            9,
-            {1},
-            Port::DataType::DOUBLE
-        }
-    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -258,12 +251,6 @@ bool SimConnectSourceLocalVariables::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
-    result &= SimConnect_AddToClientDataDefinition(
-        simConnectHandle,
-        0,
-        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_FLOAT64
-    );
 
     result &= SimConnect_RequestClientData(
         simConnectHandle,
@@ -291,7 +278,7 @@ bool SimConnectSourceLocalVariables::output(
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 10; ++kI) {
+  for (int kI = 0; kI < 9; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -313,10 +300,9 @@ bool SimConnectSourceLocalVariables::output(
   outputSignals[3]->set(0, data.thrustReductionAltitude);
   outputSignals[4]->set(0, data.thrustReductionAltitudeGoAround);
   outputSignals[5]->set(0, data.fcuTrkFpaModeActive);
-  outputSignals[6]->set(0, data.fcuSelectedAltitude);
-  outputSignals[7]->set(0, data.fcuSelectedFpa);
-  outputSignals[8]->set(0, data.crossTrackError);
-  outputSignals[9]->set(0, data.trackAngleError);
+  outputSignals[6]->set(0, data.fcuSelectedFpa);
+  outputSignals[7]->set(0, data.crossTrackError);
+  outputSignals[8]->set(0, data.trackAngleError);
 
   // return result
   return true;
