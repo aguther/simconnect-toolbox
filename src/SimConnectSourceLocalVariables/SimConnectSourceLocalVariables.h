@@ -63,6 +63,7 @@ class simconnect::toolbox::blocks::SimConnectSourceLocalVariables : public block
     double thrustReductionAltitude;
     double thrustReductionAltitudeGoAround;
     double fcuTrkFpaModeActive;
+    double fcuSelectedVs;
     double fcuSelectedFpa;
     double crossTrackError;
     double trackAngleError;
