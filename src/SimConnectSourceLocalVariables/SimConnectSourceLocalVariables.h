@@ -65,6 +65,7 @@ class simconnect::toolbox::blocks::SimConnectSourceLocalVariables : public block
     double fcuTrkFpaModeActive;
     double fcuSelectedVs;
     double fcuSelectedFpa;
+    double fcuSelectedHeading;
     double crossTrackError;
     double trackAngleError;
   };
