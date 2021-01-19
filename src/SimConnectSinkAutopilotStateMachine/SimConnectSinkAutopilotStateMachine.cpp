@@ -123,6 +123,16 @@ bool SimConnectSinkAutopilotStateMachine::configureSizeAndPorts(
          {1},
          Port::DataType::DOUBLE}
     );
+    inputPortInfo.push_back(
+        {11,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {12,
+         {1},
+         Port::DataType::DOUBLE}
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -194,6 +204,18 @@ bool SimConnectSinkAutopilotStateMachine::initialize(
         0,
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_INT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_INT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
     result &= SimConnect_AddToClientDataDefinition(
         simConnectHandle,
@@ -274,7 +296,7 @@ bool SimConnectSinkAutopilotStateMachine::output(
 ) {
   // vector for output signals
   std::vector<InputSignalPtr> inputSignals;
-  for (int kI = 0; kI < 11; ++kI) {
+  for (int kI = 0; kI < 13; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getInputPortSignal(kI);
     // check if output is ok
@@ -287,26 +309,30 @@ bool SimConnectSinkAutopilotStateMachine::output(
   }
 
   // write output value to all signals
-  data.enabled = inputSignals[0]->get<double>(0) != 0;
-  data.lateral_law = inputSignals[1]->get<double>(0);
-  data.lateral_mode = inputSignals[2]->get<double>(0);
-  data.lateral_mode_armed = inputSignals[3]->get<double>(0);
-  data.vertical_law = inputSignals[4]->get<double>(0);
-  data.vertical_mode = inputSignals[5]->get<double>(0);
-  data.vertical_mode_armed = inputSignals[6]->get<double>(0);
-  data.Psi_c_deg = inputSignals[7]->get<double>(0);
-  data.H_c_ft = inputSignals[8]->get<double>(0);
-  data.H_dot_c_fpm = inputSignals[9]->get<double>(0);
-  data.FPA_c_deg = inputSignals[10]->get<double>(0);
+  data.enabled_AP1 = inputSignals[0]->get<double>(0) != 0;
+  data.enabled_AP2 = inputSignals[1]->get<double>(0) != 0;
+  data.lateral_law = inputSignals[2]->get<double>(0);
+  data.lateral_mode = inputSignals[3]->get<double>(0);
+  data.lateral_mode_armed = inputSignals[4]->get<double>(0);
+  data.vertical_law = inputSignals[5]->get<double>(0);
+  data.vertical_mode = inputSignals[6]->get<double>(0);
+  data.vertical_mode_armed = inputSignals[7]->get<double>(0);
+  data.autothrust_mode = inputSignals[8]->get<double>(0);
+  data.Psi_c_deg = inputSignals[9]->get<double>(0);
+  data.H_c_ft = inputSignals[10]->get<double>(0);
+  data.H_dot_c_fpm = inputSignals[11]->get<double>(0);
+  data.FPA_c_deg = inputSignals[12]->get<double>(0);
 
   // only write when needed
-  if (data.enabled != lastData.enabled
+  if (data.enabled_AP1 != lastData.enabled_AP1
+      || data.enabled_AP2 != lastData.enabled_AP2
       || data.lateral_law != lastData.lateral_law
       || data.lateral_mode != lastData.lateral_mode
       || data.lateral_mode_armed != lastData.lateral_mode_armed
       || data.vertical_law != lastData.vertical_law
       || data.vertical_mode != lastData.vertical_mode
       || data.vertical_mode_armed != lastData.vertical_mode_armed
+      || data.autothrust_mode != lastData.autothrust_mode
       || data.Psi_c_deg != lastData.Psi_c_deg
       || data.H_c_ft != lastData.H_c_ft
       || data.H_dot_c_fpm != lastData.H_dot_c_fpm

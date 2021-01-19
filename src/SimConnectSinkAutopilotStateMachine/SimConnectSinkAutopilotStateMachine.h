@@ -57,13 +57,15 @@ class simconnect::toolbox::blocks::SimConnectSinkAutopilotStateMachine : public 
 
  private:
   struct AutopilotStateMachine {
-    unsigned long long enabled;
+    unsigned long long enabled_AP1;
+    unsigned long long enabled_AP2;
     double lateral_law;
     double lateral_mode;
     double lateral_mode_armed;
     double vertical_law;
     double vertical_mode;
     double vertical_mode_armed;
+    double autothrust_mode;
     double Psi_c_deg;
     double H_c_ft;
     double H_dot_c_fpm;
@@ -76,6 +78,8 @@ class simconnect::toolbox::blocks::SimConnectSinkAutopilotStateMachine : public 
   AutopilotStateMachine data;
   AutopilotStateMachine lastData = {
       false,
+      false,
+      -1,
       -1,
       -1,
       -1,
