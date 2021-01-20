@@ -65,6 +65,7 @@ class simconnect::toolbox::blocks::SimConnectSinkAutopilotStateMachine : public 
     double vertical_law;
     double vertical_mode;
     double vertical_mode_armed;
+    double mode_reversion;
     double autothrust_mode;
     double Psi_c_deg;
     double H_c_ft;
@@ -79,6 +80,7 @@ class simconnect::toolbox::blocks::SimConnectSinkAutopilotStateMachine : public 
   AutopilotStateMachine lastData = {
       false,
       false,
+      -1,
       -1,
       -1,
       -1,

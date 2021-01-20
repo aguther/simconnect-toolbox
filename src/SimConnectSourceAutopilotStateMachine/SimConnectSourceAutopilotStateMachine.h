@@ -65,6 +65,7 @@ class simconnect::toolbox::blocks::SimConnectSourceAutopilotStateMachine : publi
     double vertical_law;
     double vertical_mode;
     double vertical_mode_armed;
+    double mode_reversion;
     double autothrust_mode;
     double Psi_c_deg;
     double H_c_ft;
