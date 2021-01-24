@@ -71,6 +71,7 @@ class simconnect::toolbox::blocks::SimConnectSinkAutopilotStateMachine : public 
     double H_c_ft;
     double H_dot_c_fpm;
     double FPA_c_deg;
+    double V_SRS_c_kn;
   };
 
   int configurationIndex = 0;
@@ -80,6 +81,7 @@ class simconnect::toolbox::blocks::SimConnectSinkAutopilotStateMachine : public 
   AutopilotStateMachine lastData = {
       false,
       false,
+      -1,
       -1,
       -1,
       -1,

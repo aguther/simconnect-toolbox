@@ -59,7 +59,10 @@ class simconnect::toolbox::blocks::SimConnectSourceLocalVariables : public block
   struct LocalVariables {
     double flightPhase;
     double V2;
+    double V_APP;
+    double V_LS;
     double flightPlanAvailable;
+    double altitudeConstraint;
     double thrustReductionAltitude;
     double thrustReductionAltitudeGoAround;
     double accelerationAltitude;

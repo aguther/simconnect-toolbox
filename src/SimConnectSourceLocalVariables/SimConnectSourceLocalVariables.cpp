@@ -166,6 +166,27 @@ bool SimConnectSourceLocalVariables::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
+    outputPortInfo.push_back(
+        {
+            14,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
+    outputPortInfo.push_back(
+        {
+            15,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
+    outputPortInfo.push_back(
+        {
+            16,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -316,6 +337,24 @@ bool SimConnectSourceLocalVariables::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     result &= SimConnect_RequestClientData(
         simConnectHandle,
@@ -343,7 +382,7 @@ bool SimConnectSourceLocalVariables::output(
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 14; ++kI) {
+  for (int kI = 0; kI < 17; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -361,18 +400,21 @@ bool SimConnectSourceLocalVariables::output(
   // write output value to all signals
   outputSignals[0]->set(0, data.flightPhase);
   outputSignals[1]->set(0, data.V2);
-  outputSignals[2]->set(0, data.flightPlanAvailable);
-  outputSignals[3]->set(0, data.thrustReductionAltitude);
-  outputSignals[4]->set(0, data.thrustReductionAltitudeGoAround);
-  outputSignals[5]->set(0, data.accelerationAltitude);
-  outputSignals[6]->set(0, data.accelerationAltitudeEngineOut);
-  outputSignals[7]->set(0, data.accelerationAltitudeGoAround);
-  outputSignals[8]->set(0, data.fcuTrkFpaModeActive);
-  outputSignals[9]->set(0, data.fcuSelectedVs);
-  outputSignals[10]->set(0, data.fcuSelectedFpa);
-  outputSignals[11]->set(0, data.fcuSelectedHeading);
-  outputSignals[12]->set(0, data.crossTrackError);
-  outputSignals[13]->set(0, data.trackAngleError);
+  outputSignals[2]->set(0, data.V_APP);
+  outputSignals[3]->set(0, data.V_LS);
+  outputSignals[4]->set(0, data.flightPlanAvailable);
+  outputSignals[5]->set(0, data.altitudeConstraint);
+  outputSignals[6]->set(0, data.thrustReductionAltitude);
+  outputSignals[7]->set(0, data.thrustReductionAltitudeGoAround);
+  outputSignals[8]->set(0, data.accelerationAltitude);
+  outputSignals[9]->set(0, data.accelerationAltitudeEngineOut);
+  outputSignals[10]->set(0, data.accelerationAltitudeGoAround);
+  outputSignals[11]->set(0, data.fcuTrkFpaModeActive);
+  outputSignals[12]->set(0, data.fcuSelectedVs);
+  outputSignals[13]->set(0, data.fcuSelectedFpa);
+  outputSignals[14]->set(0, data.fcuSelectedHeading);
+  outputSignals[15]->set(0, data.crossTrackError);
+  outputSignals[16]->set(0, data.trackAngleError);
 
   // return result
   return true;

@@ -166,6 +166,13 @@ bool SimConnectSourceAutopilotStateMachine::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
+    outputPortInfo.push_back(
+        {
+            14,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -316,6 +323,12 @@ bool SimConnectSourceAutopilotStateMachine::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     result &= SimConnect_RequestClientData(
         simConnectHandle,
@@ -343,7 +356,7 @@ bool SimConnectSourceAutopilotStateMachine::output(
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 14; ++kI) {
+  for (int kI = 0; kI < 15; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -359,8 +372,8 @@ bool SimConnectSourceAutopilotStateMachine::output(
   processDispatch();
 
   // write output value to all signals
-  outputSignals[0]->set(0, data.enabled_AP1);
-  outputSignals[1]->set(0, data.enabled_AP2);
+  outputSignals[0]->set(0, data.enabled_AP1 == 1 ? 1.0 : 0.0);
+  outputSignals[1]->set(0, data.enabled_AP2 == 1 ? 1.0 : 0.0);
   outputSignals[2]->set(0, data.lateral_law);
   outputSignals[3]->set(0, data.lateral_mode);
   outputSignals[4]->set(0, data.lateral_mode_armed);
@@ -373,6 +386,7 @@ bool SimConnectSourceAutopilotStateMachine::output(
   outputSignals[11]->set(0, data.H_c_ft);
   outputSignals[12]->set(0, data.H_dot_c_fpm);
   outputSignals[13]->set(0, data.FPA_c_deg);
+  outputSignals[14]->set(0, data.V_SRS_c_kn);
 
   // return result
   return true;

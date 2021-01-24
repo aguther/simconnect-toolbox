@@ -138,6 +138,11 @@ bool SimConnectSinkAutopilotStateMachine::configureSizeAndPorts(
          {1},
          Port::DataType::DOUBLE}
     );
+    inputPortInfo.push_back(
+        {14,
+         {1},
+         Port::DataType::DOUBLE}
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -288,6 +293,12 @@ bool SimConnectSinkAutopilotStateMachine::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     if (FAILED(result)) {
       bfError << "Failed to initialize client data";
@@ -307,7 +318,7 @@ bool SimConnectSinkAutopilotStateMachine::output(
 ) {
   // vector for output signals
   std::vector<InputSignalPtr> inputSignals;
-  for (int kI = 0; kI < 14; ++kI) {
+  for (int kI = 0; kI < 15; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getInputPortSignal(kI);
     // check if output is ok
@@ -334,6 +345,7 @@ bool SimConnectSinkAutopilotStateMachine::output(
   data.H_c_ft = inputSignals[11]->get<double>(0);
   data.H_dot_c_fpm = inputSignals[12]->get<double>(0);
   data.FPA_c_deg = inputSignals[13]->get<double>(0);
+  data.V_SRS_c_kn = inputSignals[14]->get<double>(0);
 
   // only write when needed
   if (data.enabled_AP1 != lastData.enabled_AP1
@@ -349,7 +361,8 @@ bool SimConnectSinkAutopilotStateMachine::output(
       || data.Psi_c_deg != lastData.Psi_c_deg
       || data.H_c_ft != lastData.H_c_ft
       || data.H_dot_c_fpm != lastData.H_dot_c_fpm
-      || data.FPA_c_deg != lastData.FPA_c_deg) {
+      || data.FPA_c_deg != lastData.FPA_c_deg
+      || data.V_SRS_c_kn != lastData.V_SRS_c_kn) {
     // write data to simconnect
     HRESULT result = SimConnect_SetClientData(
         simConnectHandle,

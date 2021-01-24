@@ -71,6 +71,7 @@ class simconnect::toolbox::blocks::SimConnectSourceAutopilotStateMachine : publi
     double H_c_ft;
     double H_dot_c_fpm;
     double FPA_c_deg;
+    double V_SRS_c_kn;
   };
 
   int configurationIndex = 0;
