@@ -143,6 +143,16 @@ bool SimConnectSinkAutopilotStateMachine::configureSizeAndPorts(
          {1},
          Port::DataType::DOUBLE}
     );
+    inputPortInfo.push_back(
+        {15,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {16,
+         {1},
+         Port::DataType::DOUBLE}
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -299,6 +309,18 @@ bool SimConnectSinkAutopilotStateMachine::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     if (FAILED(result)) {
       bfError << "Failed to initialize client data";
@@ -318,7 +340,7 @@ bool SimConnectSinkAutopilotStateMachine::output(
 ) {
   // vector for output signals
   std::vector<InputSignalPtr> inputSignals;
-  for (int kI = 0; kI < 15; ++kI) {
+  for (int kI = 0; kI < 17; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getInputPortSignal(kI);
     // check if output is ok
@@ -340,12 +362,14 @@ bool SimConnectSinkAutopilotStateMachine::output(
   data.vertical_mode = inputSignals[6]->get<double>(0);
   data.vertical_mode_armed = inputSignals[7]->get<double>(0);
   data.mode_reversion = inputSignals[8]->get<double>(0);
-  data.autothrust_mode = inputSignals[9]->get<double>(0);
-  data.Psi_c_deg = inputSignals[10]->get<double>(0);
-  data.H_c_ft = inputSignals[11]->get<double>(0);
-  data.H_dot_c_fpm = inputSignals[12]->get<double>(0);
-  data.FPA_c_deg = inputSignals[13]->get<double>(0);
-  data.V_SRS_c_kn = inputSignals[14]->get<double>(0);
+  data.mode_reversion_TRK_FPA = inputSignals[9]->get<double>(0);
+  data.autothrust_mode = inputSignals[10]->get<double>(0);
+  data.Psi_c_deg = inputSignals[11]->get<double>(0);
+  data.H_c_ft = inputSignals[12]->get<double>(0);
+  data.H_dot_c_fpm = inputSignals[13]->get<double>(0);
+  data.FPA_c_deg = inputSignals[14]->get<double>(0);
+  data.V_c_kn = inputSignals[15]->get<double>(0);
+  data.ALT_soft_mode_active = inputSignals[16]->get<double>(0);
 
   // only write when needed
   if (data.enabled_AP1 != lastData.enabled_AP1
@@ -357,12 +381,14 @@ bool SimConnectSinkAutopilotStateMachine::output(
       || data.vertical_mode != lastData.vertical_mode
       || data.vertical_mode_armed != lastData.vertical_mode_armed
       || data.mode_reversion != lastData.mode_reversion
+      || data.mode_reversion_TRK_FPA != lastData.mode_reversion_TRK_FPA
       || data.autothrust_mode != lastData.autothrust_mode
       || data.Psi_c_deg != lastData.Psi_c_deg
       || data.H_c_ft != lastData.H_c_ft
       || data.H_dot_c_fpm != lastData.H_dot_c_fpm
       || data.FPA_c_deg != lastData.FPA_c_deg
-      || data.V_SRS_c_kn != lastData.V_SRS_c_kn) {
+      || data.V_c_kn != lastData.V_c_kn
+      || data.ALT_soft_mode_active != lastData.ALT_soft_mode_active) {
     // write data to simconnect
     HRESULT result = SimConnect_SetClientData(
         simConnectHandle,

@@ -66,12 +66,14 @@ class simconnect::toolbox::blocks::SimConnectSourceAutopilotStateMachine : publi
     double vertical_mode;
     double vertical_mode_armed;
     double mode_reversion;
+    double mode_reversion_TRK_FPA;
     double autothrust_mode;
     double Psi_c_deg;
     double H_c_ft;
     double H_dot_c_fpm;
     double FPA_c_deg;
-    double V_SRS_c_kn;
+    double V_c_kn;
+    double ALT_soft_mode_active;
   };
 
   int configurationIndex = 0;

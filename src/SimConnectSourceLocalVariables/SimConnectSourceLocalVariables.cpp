@@ -187,6 +187,20 @@ bool SimConnectSourceLocalVariables::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
+    outputPortInfo.push_back(
+        {
+            17,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
+    outputPortInfo.push_back(
+        {
+            18,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -355,6 +369,18 @@ bool SimConnectSourceLocalVariables::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     result &= SimConnect_RequestClientData(
         simConnectHandle,
@@ -382,7 +408,7 @@ bool SimConnectSourceLocalVariables::output(
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 17; ++kI) {
+  for (int kI = 0; kI < 19; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -409,12 +435,14 @@ bool SimConnectSourceLocalVariables::output(
   outputSignals[8]->set(0, data.accelerationAltitude);
   outputSignals[9]->set(0, data.accelerationAltitudeEngineOut);
   outputSignals[10]->set(0, data.accelerationAltitudeGoAround);
-  outputSignals[11]->set(0, data.fcuTrkFpaModeActive);
-  outputSignals[12]->set(0, data.fcuSelectedVs);
-  outputSignals[13]->set(0, data.fcuSelectedFpa);
-  outputSignals[14]->set(0, data.fcuSelectedHeading);
-  outputSignals[15]->set(0, data.crossTrackError);
-  outputSignals[16]->set(0, data.trackAngleError);
+  outputSignals[11]->set(0, data.cruiseAltitude);
+  outputSignals[12]->set(0, data.directToTrigger);
+  outputSignals[13]->set(0, data.fcuTrkFpaModeActive);
+  outputSignals[14]->set(0, data.fcuSelectedVs);
+  outputSignals[15]->set(0, data.fcuSelectedFpa);
+  outputSignals[16]->set(0, data.fcuSelectedHeading);
+  outputSignals[17]->set(0, data.crossTrackError);
+  outputSignals[18]->set(0, data.trackAngleError);
 
   // return result
   return true;

@@ -173,6 +173,20 @@ bool SimConnectSourceAutopilotStateMachine::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
+    outputPortInfo.push_back(
+        {
+            15,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
+    outputPortInfo.push_back(
+        {
+            16,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -329,6 +343,18 @@ bool SimConnectSourceAutopilotStateMachine::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     result &= SimConnect_RequestClientData(
         simConnectHandle,
@@ -356,7 +382,7 @@ bool SimConnectSourceAutopilotStateMachine::output(
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 15; ++kI) {
+  for (int kI = 0; kI < 17; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -381,12 +407,14 @@ bool SimConnectSourceAutopilotStateMachine::output(
   outputSignals[6]->set(0, data.vertical_mode);
   outputSignals[7]->set(0, data.vertical_mode_armed);
   outputSignals[8]->set(0, data.mode_reversion);
-  outputSignals[9]->set(0, data.autothrust_mode);
-  outputSignals[10]->set(0, data.Psi_c_deg);
-  outputSignals[11]->set(0, data.H_c_ft);
-  outputSignals[12]->set(0, data.H_dot_c_fpm);
-  outputSignals[13]->set(0, data.FPA_c_deg);
-  outputSignals[14]->set(0, data.V_SRS_c_kn);
+  outputSignals[9]->set(0, data.mode_reversion_TRK_FPA);
+  outputSignals[10]->set(0, data.autothrust_mode);
+  outputSignals[11]->set(0, data.Psi_c_deg);
+  outputSignals[12]->set(0, data.H_c_ft);
+  outputSignals[13]->set(0, data.H_dot_c_fpm);
+  outputSignals[14]->set(0, data.FPA_c_deg);
+  outputSignals[15]->set(0, data.V_c_kn);
+  outputSignals[16]->set(0, data.ALT_soft_mode_active);
 
   // return result
   return true;
