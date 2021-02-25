@@ -25,6 +25,7 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/src/SimConnectSourceAutopilotLaws
         ${CMAKE_SOURCE_DIR}/src/SimConnectSourceAutopilotStateMachine
         ${CMAKE_SOURCE_DIR}/src/SimConnectSourceLocalVariables
+        ${CMAKE_SOURCE_DIR}/src/SimConnectSourceLocalVariablesAutothrust
 )
 
 link_directories(
@@ -52,6 +53,7 @@ add_library(
         src/SimConnectSourceAutopilotLaws/SimConnectSourceAutopilotLaws.cpp
         src/SimConnectSourceAutopilotStateMachine/SimConnectSourceAutopilotStateMachine.cpp
         src/SimConnectSourceLocalVariables/SimConnectSourceLocalVariables.cpp
+        src/SimConnectSourceLocalVariablesAutothrust/SimConnectSourceLocalVariablesAutothrust.cpp
 )
 
 set_target_properties(

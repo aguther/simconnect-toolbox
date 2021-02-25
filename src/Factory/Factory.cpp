@@ -7,6 +7,7 @@
 #include "SimConnectSourceAutopilotLaws.h"
 #include "SimConnectSourceAutopilotStateMachine.h"
 #include "SimConnectSourceLocalVariables.h"
+#include "SimConnectSourceLocalVariablesAutothrust.h"
 
 #pragma warning(disable : 4267)
 #pragma warning(disable : 4996)
@@ -65,5 +66,11 @@ SHLIBPP_DEFINE_SHARED_SUBCLASS(
 SHLIBPP_DEFINE_SHARED_SUBCLASS(
     SimConnectSourceLocalVariables,
     simconnect::toolbox::blocks::SimConnectSourceLocalVariables,
+    blockfactory::core::Block
+);
+
+SHLIBPP_DEFINE_SHARED_SUBCLASS(
+    SimConnectSourceLocalVariablesAutothrust,
+    simconnect::toolbox::blocks::SimConnectSourceLocalVariablesAutothrust,
     blockfactory::core::Block
 );
