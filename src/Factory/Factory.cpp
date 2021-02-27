@@ -2,6 +2,7 @@
 #include "SimConnectSink.h"
 #include "SimConnectSinkAutopilotLaws.h"
 #include "SimConnectSinkAutopilotStateMachine.h"
+#include "SimConnectSinkAutothrust.h"
 #include "SimConnectSource.h"
 #include "SimConnectSourceAutopilotEvents.h"
 #include "SimConnectSourceAutopilotLaws.h"
@@ -36,6 +37,12 @@ SHLIBPP_DEFINE_SHARED_SUBCLASS(
 SHLIBPP_DEFINE_SHARED_SUBCLASS(
     SimConnectSinkAutopilotStateMachine,
     simconnect::toolbox::blocks::SimConnectSinkAutopilotStateMachine,
+    blockfactory::core::Block
+);
+
+SHLIBPP_DEFINE_SHARED_SUBCLASS(
+    SimConnectSinkAutothrust,
+    simconnect::toolbox::blocks::SimConnectSinkAutothrust,
     blockfactory::core::Block
 );
 

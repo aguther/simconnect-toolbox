@@ -14,7 +14,7 @@
  *     limitations under the License.
  */
 
-#include "SimConnectSourceLocalVariablesAutothrust.h"
+#include "SimConnectSinkAutothrust.h"
 
 #include <BlockFactory/Core/Log.h>
 #include <BlockFactory/Core/Parameter.h>
@@ -23,11 +23,11 @@
 using namespace blockfactory::core;
 using namespace simconnect::toolbox::blocks;
 
-unsigned SimConnectSourceLocalVariablesAutothrust::numberOfParameters() {
+unsigned SimConnectSinkAutothrust::numberOfParameters() {
   return Block::numberOfParameters() + 2;
 }
 
-bool SimConnectSourceLocalVariablesAutothrust::parseParameters(
+bool SimConnectSinkAutothrust::parseParameters(
     BlockInformation *blockInfo
 ) {
   // get base index
@@ -50,7 +50,7 @@ bool SimConnectSourceLocalVariablesAutothrust::parseParameters(
   return blockInfo->parseParameters(m_parameters);
 }
 
-bool SimConnectSourceLocalVariablesAutothrust::configureSizeAndPorts(
+bool SimConnectSinkAutothrust::configureSizeAndPorts(
     BlockInformation *blockInfo
 ) {
   if (!Block::configureSizeAndPorts(blockInfo)) {
@@ -58,7 +58,7 @@ bool SimConnectSourceLocalVariablesAutothrust::configureSizeAndPorts(
   }
 
   // parse the parameters
-  if (!SimConnectSourceLocalVariablesAutothrust::parseParameters(blockInfo)) {
+  if (!SimConnectSinkAutothrust::parseParameters(blockInfo)) {
     bfError << "Failed to parse parameters.";
     return false;
   }
@@ -68,96 +68,60 @@ bool SimConnectSourceLocalVariablesAutothrust::configureSizeAndPorts(
 
   // get output count
   try {
-    outputPortInfo.push_back(
-        {
-            0,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {0,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            1,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {1,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            2,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {2,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            3,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {3,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            4,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {4,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            5,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {5,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            6,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {6,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            7,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {7,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            8,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {8,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            9,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {9,
+         {1},
+         Port::DataType::DOUBLE}
     );
-    outputPortInfo.push_back(
-        {
-            10,
-            {1},
-            Port::DataType::DOUBLE
-        }
-    );
-    outputPortInfo.push_back(
-        {
-            11,
-            {1},
-            Port::DataType::DOUBLE
-        }
-    );
-    outputPortInfo.push_back(
-        {
-            12,
-            {1},
-            Port::DataType::DOUBLE
-        }
+    inputPortInfo.push_back(
+        {10,
+         {1},
+         Port::DataType::DOUBLE}
     );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
@@ -173,7 +137,7 @@ bool SimConnectSourceLocalVariablesAutothrust::configureSizeAndPorts(
   return true;
 }
 
-bool SimConnectSourceLocalVariablesAutothrust::initialize(
+bool SimConnectSinkAutothrust::initialize(
     BlockInformation *blockInfo
 ) {
   // the base Block class need to be initialized first
@@ -182,7 +146,7 @@ bool SimConnectSourceLocalVariablesAutothrust::initialize(
   }
 
   // parse the parameters
-  if (!SimConnectSourceLocalVariablesAutothrust::parseParameters(blockInfo)) {
+  if (!SimConnectSinkAutothrust::parseParameters(blockInfo)) {
     bfError << "Failed to parse parameters.";
     return false;
   }
@@ -214,9 +178,9 @@ bool SimConnectSourceLocalVariablesAutothrust::initialize(
   }
 
   try {
-    HRESULT result;
-    result = SimConnect_MapClientDataNameToID(
-        simConnectHandle, "A32NX_CLIENT_DATA_LOCAL_VARIABLES_AUTOTHRUST", 0);
+    HRESULT result = true;
+    result &= SimConnect_MapClientDataNameToID(
+        simConnectHandle, "A32NX_CLIENT_DATA_AUTOTHRUST", 0);
 
     result &= SimConnect_CreateClientData(
         simConnectHandle,
@@ -291,26 +255,6 @@ bool SimConnectSourceLocalVariablesAutothrust::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
-    result &= SimConnect_AddToClientDataDefinition(
-        simConnectHandle,
-        0,
-        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_FLOAT64
-    );
-    result &= SimConnect_AddToClientDataDefinition(
-        simConnectHandle,
-        0,
-        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-        SIMCONNECT_CLIENTDATATYPE_FLOAT64
-    );
-
-    result &= SimConnect_RequestClientData(
-        simConnectHandle,
-        0,
-        0,
-        0,
-        SIMCONNECT_CLIENT_DATA_PERIOD_ON_SET
-    );
 
     if (FAILED(result)) {
       bfError << "Failed to initialize client data";
@@ -325,46 +269,74 @@ bool SimConnectSourceLocalVariablesAutothrust::initialize(
   return true;
 }
 
-bool SimConnectSourceLocalVariablesAutothrust::output(
+bool SimConnectSinkAutothrust::output(
     const BlockInformation *blockInfo
 ) {
   // vector for output signals
-  std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 13; ++kI) {
+  std::vector<InputSignalPtr> inputSignals;
+  for (int kI = 0; kI < 11; ++kI) {
     // get output signal
-    auto outputSignal = blockInfo->getOutputPortSignal(kI);
+    auto outputSignal = blockInfo->getInputPortSignal(kI);
     // check if output is ok
     if (!outputSignal) {
       bfError << "Signals not valid";
       return false;
     }
     // store signal
-    outputSignals.emplace_back(outputSignal);
+    inputSignals.emplace_back(outputSignal);
   }
 
-  // get data from simconnect
-  processDispatch();
-
   // write output value to all signals
-  outputSignals[0]->set(0, data.ATHR_push);
-  outputSignals[1]->set(0, data.TLA_1);
-  outputSignals[2]->set(0, data.TLA_2);
-  outputSignals[3]->set(0, data.V_c_kn);
-  outputSignals[4]->set(0, data.V_LS_kn);
-  outputSignals[5]->set(0, data.V_MAX_kn);
-  outputSignals[6]->set(0, data.thrust_limit_REV_percent);
-  outputSignals[7]->set(0, data.thrust_limit_IDLE_percent);
-  outputSignals[8]->set(0, data.thrust_limit_CLB_percent);
-  outputSignals[9]->set(0, data.thrust_limit_MCT_percent);
-  outputSignals[10]->set(0, data.thrust_limit_FLEX_percent);
-  outputSignals[11]->set(0, data.thrust_limit_TOGA_percent);
-  outputSignals[12]->set(0, data.mode_requested);
+  data.N1_TLA_1_percent = inputSignals[0]->get<double>(0);
+  data.N1_TLA_2_percent = inputSignals[1]->get<double>(0);
+  data.is_in_reverse_1 = inputSignals[2]->get<double>(0);
+  data.is_in_reverse_2 = inputSignals[3]->get<double>(0);
+  data.thrust_limit_type = inputSignals[4]->get<double>(0);
+  data.thrust_limit_percent = inputSignals[5]->get<double>(0);
+  data.N1_c_1_percent = inputSignals[6]->get<double>(0);
+  data.N1_c_2_percent = inputSignals[7]->get<double>(0);
+  data.status = inputSignals[8]->get<double>(0);
+  data.mode = inputSignals[9]->get<double>(0);
+  data.mode_message = inputSignals[10]->get<double>(0);
+
+  // only write when needed
+  if (data.N1_TLA_1_percent != lastData.N1_TLA_1_percent
+      || data.N1_TLA_2_percent != lastData.N1_TLA_2_percent
+      || data.is_in_reverse_1 != lastData.is_in_reverse_1
+      || data.is_in_reverse_2 != lastData.is_in_reverse_2
+      || data.thrust_limit_type != lastData.thrust_limit_type
+      || data.thrust_limit_percent != lastData.thrust_limit_percent
+      || data.N1_c_1_percent != lastData.N1_c_1_percent
+      || data.N1_c_2_percent != lastData.N1_c_2_percent
+      || data.status != lastData.status
+      || data.mode != lastData.mode
+      || data.mode_message != lastData.mode_message) {
+    // write data to simconnect
+    HRESULT result = SimConnect_SetClientData(
+        simConnectHandle,
+        0,
+        0,
+        SIMCONNECT_CLIENT_DATA_SET_FLAG_DEFAULT,
+        0,
+        sizeof(data),
+        &data
+    );
+
+    // check result
+    if (FAILED(result)) {
+      bfError << "Failed to write to SimConnect";
+      return false;
+    }
+
+    // remember new settings
+    lastData = data;
+  }
 
   // return result
   return true;
 }
 
-bool SimConnectSourceLocalVariablesAutothrust::terminate(
+bool SimConnectSinkAutothrust::terminate(
     const BlockInformation *blockInfo
 ) {
   // disconnect
@@ -373,35 +345,4 @@ bool SimConnectSourceLocalVariablesAutothrust::terminate(
 
   // success
   return true;
-}
-
-void SimConnectSourceLocalVariablesAutothrust::processDispatch() {
-  DWORD cbData;
-  SIMCONNECT_RECV *pData;
-  while (SUCCEEDED(SimConnect_GetNextDispatch(simConnectHandle, &pData, &cbData))) {
-    dispatchProcedure(pData, &cbData);
-  }
-}
-
-void SimConnectSourceLocalVariablesAutothrust::dispatchProcedure(
-    SIMCONNECT_RECV *pData,
-    DWORD *cbData
-) {
-  switch (pData->dwID) {
-    case SIMCONNECT_RECV_ID_CLIENT_DATA: {
-      auto *event = (SIMCONNECT_RECV_CLIENT_DATA *) pData;
-      switch (event->dwRequestID) {
-        case 0:
-          data = *reinterpret_cast<LocalVariablesAutothrust *>(&event->dwData);
-          break;
-
-        default:
-          break;
-      }
-      break;
-    }
-
-    default:
-      break;
-  }
 }

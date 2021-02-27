@@ -20,6 +20,7 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/src/SimConnectSink
         ${CMAKE_SOURCE_DIR}/src/SimConnectSinkAutopilotLaws
         ${CMAKE_SOURCE_DIR}/src/SimConnectSinkAutopilotStateMachine
+        ${CMAKE_SOURCE_DIR}/src/SimConnectSinkAutothrust
         ${CMAKE_SOURCE_DIR}/src/SimConnectSource
         ${CMAKE_SOURCE_DIR}/src/SimConnectSourceAutopilotEvents
         ${CMAKE_SOURCE_DIR}/src/SimConnectSourceAutopilotLaws
@@ -48,6 +49,7 @@ add_library(
         src/SimConnectSink/SimConnectSink.cpp
         src/SimConnectSinkAutopilotLaws/SimConnectSinkAutopilotLaws.cpp
         src/SimConnectSinkAutopilotStateMachine/SimConnectSinkAutopilotStateMachine.cpp
+        src/SimConnectSinkAutothrust/SimConnectSinkAutothrust.cpp
         src/SimConnectSource/SimConnectSource.cpp
         src/SimConnectSourceAutopilotEvents/SimConnectSourceAutopilotEvents.cpp
         src/SimConnectSourceAutopilotLaws/SimConnectSourceAutopilotLaws.cpp

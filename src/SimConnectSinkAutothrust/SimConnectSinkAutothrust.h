@@ -22,16 +22,16 @@
 #include <BlockFactory/Core/BlockInformation.h>
 
 namespace simconnect::toolbox::blocks {
-class SimConnectSourceLocalVariablesAutothrust;
+class SimConnectSinkAutothrust;
 }
 
-class simconnect::toolbox::blocks::SimConnectSourceLocalVariablesAutothrust : public blockfactory::core::Block {
+class simconnect::toolbox::blocks::SimConnectSinkAutothrust : public blockfactory::core::Block {
  public:
   static const std::string ClassName;
 
-  SimConnectSourceLocalVariablesAutothrust() = default;
+  SimConnectSinkAutothrust() = default;
 
-  ~SimConnectSourceLocalVariablesAutothrust() override = default;
+  ~SimConnectSinkAutothrust() override = default;
 
   unsigned numberOfParameters() override;
 
@@ -56,31 +56,35 @@ class simconnect::toolbox::blocks::SimConnectSourceLocalVariablesAutothrust : pu
   ) override;
 
  private:
-  struct LocalVariablesAutothrust {
-    double ATHR_push;
-    double TLA_1;
-    double TLA_2;
-    double V_c_kn;
-    double V_LS_kn;
-    double V_MAX_kn;
-    double thrust_limit_REV_percent;
-    double thrust_limit_IDLE_percent;
-    double thrust_limit_CLB_percent;
-    double thrust_limit_MCT_percent;
-    double thrust_limit_FLEX_percent;
-    double thrust_limit_TOGA_percent;
-    double mode_requested;
+  struct Autothrust {
+    double N1_TLA_1_percent;
+    double N1_TLA_2_percent;
+    double is_in_reverse_1;
+    double is_in_reverse_2;
+    double thrust_limit_type;
+    double thrust_limit_percent;
+    double N1_c_1_percent;
+    double N1_c_2_percent;
+    double status;
+    double mode;
+    double mode_message;
   };
 
   int configurationIndex = 0;
   std::string connectionName;
   HANDLE simConnectHandle = nullptr;
-  LocalVariablesAutothrust data = {};
-
-  void processDispatch();
-
-  void SimConnectSourceLocalVariablesAutothrust::dispatchProcedure(
-      SIMCONNECT_RECV *pData,
-      DWORD *cbData
-  );
+  Autothrust data;
+  Autothrust lastData = {
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+  };
 };
