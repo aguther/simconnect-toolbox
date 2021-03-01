@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2020 Andreas Guther
  *
@@ -70,6 +71,13 @@ class simconnect::toolbox::blocks::SimConnectSourceLocalVariablesAutothrust : pu
     double thrust_limit_FLEX_percent;
     double thrust_limit_TOGA_percent;
     double mode_requested;
+    double is_mach_mode_active;
+    double alpha_floor_condition;
+    double is_approach_mode_active;
+    double is_SRS_TO_mode_active;
+    double is_SRS_GA_mode_active;
+    double thrust_reduction_altitude;
+    double thrust_reduction_altitude_go_around;
   };
 
   int configurationIndex = 0;
