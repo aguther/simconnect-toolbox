@@ -74,8 +74,9 @@ class simconnect::toolbox::blocks::SimConnectSourceLocalVariables : public block
     double fcuSelectedVs;
     double fcuSelectedFpa;
     double fcuSelectedHeading;
-    double crossTrackError;
-    double trackAngleError;
+    double flightManagementCrossTrackError;
+    double flightManagementTrackAngleError;
+    double flightManagementPhiCommand;
   };
 
   int configurationIndex = 0;
