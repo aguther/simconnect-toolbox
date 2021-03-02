@@ -70,6 +70,7 @@ class simconnect::toolbox::blocks::SimConnectSourceLocalVariablesAutothrust : pu
     double thrust_limit_MCT_percent;
     double thrust_limit_FLEX_percent;
     double thrust_limit_TOGA_percent;
+    double flex_temperature_degC;
     double mode_requested;
     double is_mach_mode_active;
     double alpha_floor_condition;
