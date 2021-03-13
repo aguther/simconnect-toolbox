@@ -68,6 +68,7 @@ class simconnect::toolbox::blocks::SimConnectSourceLocalVariables : public block
     double accelerationAltitude;
     double accelerationAltitudeEngineOut;
     double accelerationAltitudeGoAround;
+    double accelerationAltitudeGoAroundEngineOut;
     double cruiseAltitude;
     double directToTrigger;
     double fcuTrkFpaModeActive;
