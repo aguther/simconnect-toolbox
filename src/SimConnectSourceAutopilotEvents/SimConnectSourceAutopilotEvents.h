@@ -68,6 +68,7 @@ class simconnect::toolbox::blocks::SimConnectSourceAutopilotEvents : public bloc
     double VS_pull;
     double LOC_push;
     double APPR_push;
+    double EXPED_push;
   };
 
   int configurationIndex = 0;

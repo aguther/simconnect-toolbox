@@ -145,6 +145,13 @@ bool SimConnectSourceAutopilotEvents::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
+    outputPortInfo.push_back(
+        {
+            11,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -211,6 +218,7 @@ bool SimConnectSourceAutopilotEvents::initialize(
     boolResult &= addEvent(8, "A32NX.FCU_VS_PULL", false);
     boolResult &= addEvent(9, "A32NX.FCU_LOC_PUSH", false);
     boolResult &= addEvent(10, "A32NX.FCU_APPR_PUSH", false);
+    boolResult &= addEvent(11, "A32NX.FCU_EXPED_PUSH", false);
 
     HRESULT result = SimConnect_SetNotificationGroupPriority(
         simConnectHandle,
@@ -236,7 +244,7 @@ bool SimConnectSourceAutopilotEvents::output(
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 11; ++kI) {
+  for (int kI = 0; kI < 12; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -263,6 +271,7 @@ bool SimConnectSourceAutopilotEvents::output(
   outputSignals[8]->set(0, data.VS_pull);
   outputSignals[9]->set(0, data.LOC_push);
   outputSignals[10]->set(0, data.APPR_push);
+  outputSignals[11]->set(0, data.EXPED_push);
 
   // reset signals
   data.AP_1_push = 0;
@@ -276,6 +285,7 @@ bool SimConnectSourceAutopilotEvents::output(
   data.VS_pull = 0;
   data.LOC_push = 0;
   data.APPR_push = 0;
+  data.EXPED_push = 0;
 
   // return result
   return true;
@@ -371,6 +381,11 @@ void SimConnectSourceAutopilotEvents::dispatchProcedure(
 
         case 10: {
           data.APPR_push = 1;
+          break;
+        }
+
+        case 11: {
+          data.EXPED_push = 1;
           break;
         }
 

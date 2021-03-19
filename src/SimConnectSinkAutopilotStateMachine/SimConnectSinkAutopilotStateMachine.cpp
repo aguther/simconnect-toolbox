@@ -153,6 +153,26 @@ bool SimConnectSinkAutopilotStateMachine::configureSizeAndPorts(
          {1},
          Port::DataType::DOUBLE}
     );
+    inputPortInfo.push_back(
+        {17,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {18,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {19,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {20,
+         {1},
+         Port::DataType::DOUBLE}
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -321,6 +341,30 @@ bool SimConnectSinkAutopilotStateMachine::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     if (FAILED(result)) {
       bfError << "Failed to initialize client data";
@@ -340,7 +384,7 @@ bool SimConnectSinkAutopilotStateMachine::output(
 ) {
   // vector for output signals
   std::vector<InputSignalPtr> inputSignals;
-  for (int kI = 0; kI < 17; ++kI) {
+  for (int kI = 0; kI < 21; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getInputPortSignal(kI);
     // check if output is ok
@@ -361,15 +405,19 @@ bool SimConnectSinkAutopilotStateMachine::output(
   data.vertical_law = inputSignals[5]->get<double>(0);
   data.vertical_mode = inputSignals[6]->get<double>(0);
   data.vertical_mode_armed = inputSignals[7]->get<double>(0);
-  data.mode_reversion = inputSignals[8]->get<double>(0);
-  data.mode_reversion_TRK_FPA = inputSignals[9]->get<double>(0);
-  data.autothrust_mode = inputSignals[10]->get<double>(0);
-  data.Psi_c_deg = inputSignals[11]->get<double>(0);
-  data.H_c_ft = inputSignals[12]->get<double>(0);
-  data.H_dot_c_fpm = inputSignals[13]->get<double>(0);
-  data.FPA_c_deg = inputSignals[14]->get<double>(0);
-  data.V_c_kn = inputSignals[15]->get<double>(0);
-  data.ALT_soft_mode_active = inputSignals[16]->get<double>(0);
+  data.mode_reversion_lateral = inputSignals[8]->get<double>(0);
+  data.mode_reversion_vertical = inputSignals[9]->get<double>(0);
+  data.mode_reversion_TRK_FPA = inputSignals[10]->get<double>(0);
+  data.speed_protection_mode = inputSignals[11]->get<double>(0);
+  data.autothrust_mode = inputSignals[12]->get<double>(0);
+  data.Psi_c_deg = inputSignals[13]->get<double>(0);
+  data.H_c_ft = inputSignals[14]->get<double>(0);
+  data.H_dot_c_fpm = inputSignals[15]->get<double>(0);
+  data.FPA_c_deg = inputSignals[16]->get<double>(0);
+  data.V_c_kn = inputSignals[17]->get<double>(0);
+  data.ALT_soft_mode_active = inputSignals[18]->get<double>(0);
+  data.EXPED_mode_active = inputSignals[19]->get<double>(0);
+  data.FD_disconnect = inputSignals[20]->get<double>(0);
 
   // only write when needed
   if (data.enabled_AP1 != lastData.enabled_AP1
@@ -380,15 +428,19 @@ bool SimConnectSinkAutopilotStateMachine::output(
       || data.vertical_law != lastData.vertical_law
       || data.vertical_mode != lastData.vertical_mode
       || data.vertical_mode_armed != lastData.vertical_mode_armed
-      || data.mode_reversion != lastData.mode_reversion
+      || data.mode_reversion_lateral != lastData.mode_reversion_lateral
+      || data.mode_reversion_vertical != lastData.mode_reversion_vertical
       || data.mode_reversion_TRK_FPA != lastData.mode_reversion_TRK_FPA
+      || data.speed_protection_mode != lastData.speed_protection_mode
       || data.autothrust_mode != lastData.autothrust_mode
       || data.Psi_c_deg != lastData.Psi_c_deg
       || data.H_c_ft != lastData.H_c_ft
       || data.H_dot_c_fpm != lastData.H_dot_c_fpm
       || data.FPA_c_deg != lastData.FPA_c_deg
       || data.V_c_kn != lastData.V_c_kn
-      || data.ALT_soft_mode_active != lastData.ALT_soft_mode_active) {
+      || data.ALT_soft_mode_active != lastData.ALT_soft_mode_active
+      || data.EXPED_mode_active != lastData.EXPED_mode_active
+      || data.FD_disconnect != lastData.FD_disconnect) {
     // write data to simconnect
     HRESULT result = SimConnect_SetClientData(
         simConnectHandle,

@@ -187,6 +187,34 @@ bool SimConnectSourceAutopilotStateMachine::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
+    outputPortInfo.push_back(
+        {
+            17,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
+    outputPortInfo.push_back(
+        {
+            18,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
+    outputPortInfo.push_back(
+        {
+            19,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
+    outputPortInfo.push_back(
+        {
+            20,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -355,6 +383,30 @@ bool SimConnectSourceAutopilotStateMachine::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     result &= SimConnect_RequestClientData(
         simConnectHandle,
@@ -382,7 +434,7 @@ bool SimConnectSourceAutopilotStateMachine::output(
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 17; ++kI) {
+  for (int kI = 0; kI < 21; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -406,15 +458,19 @@ bool SimConnectSourceAutopilotStateMachine::output(
   outputSignals[5]->set(0, data.vertical_law);
   outputSignals[6]->set(0, data.vertical_mode);
   outputSignals[7]->set(0, data.vertical_mode_armed);
-  outputSignals[8]->set(0, data.mode_reversion);
-  outputSignals[9]->set(0, data.mode_reversion_TRK_FPA);
-  outputSignals[10]->set(0, data.autothrust_mode);
-  outputSignals[11]->set(0, data.Psi_c_deg);
-  outputSignals[12]->set(0, data.H_c_ft);
-  outputSignals[13]->set(0, data.H_dot_c_fpm);
-  outputSignals[14]->set(0, data.FPA_c_deg);
-  outputSignals[15]->set(0, data.V_c_kn);
-  outputSignals[16]->set(0, data.ALT_soft_mode_active);
+  outputSignals[8]->set(0, data.mode_reversion_lateral);
+  outputSignals[9]->set(0, data.mode_reversion_vertical);
+  outputSignals[10]->set(0, data.mode_reversion_TRK_FPA);
+  outputSignals[11]->set(0, data.speed_protection_mode);
+  outputSignals[12]->set(0, data.autothrust_mode);
+  outputSignals[13]->set(0, data.Psi_c_deg);
+  outputSignals[14]->set(0, data.H_c_ft);
+  outputSignals[15]->set(0, data.H_dot_c_fpm);
+  outputSignals[16]->set(0, data.FPA_c_deg);
+  outputSignals[17]->set(0, data.V_c_kn);
+  outputSignals[18]->set(0, data.ALT_soft_mode_active);
+  outputSignals[19]->set(0, data.EXPED_mode_active);
+  outputSignals[20]->set(0, data.FD_disconnect);
 
   // return result
   return true;

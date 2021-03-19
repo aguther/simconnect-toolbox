@@ -65,8 +65,10 @@ class simconnect::toolbox::blocks::SimConnectSinkAutopilotStateMachine : public 
     double vertical_law;
     double vertical_mode;
     double vertical_mode_armed;
-    double mode_reversion;
+    double mode_reversion_lateral;
+    double mode_reversion_vertical;
     double mode_reversion_TRK_FPA;
+    double speed_protection_mode;
     double autothrust_mode;
     double Psi_c_deg;
     double H_c_ft;
@@ -74,6 +76,8 @@ class simconnect::toolbox::blocks::SimConnectSinkAutopilotStateMachine : public 
     double FPA_c_deg;
     double V_c_kn;
     double ALT_soft_mode_active;
+    double EXPED_mode_active;
+    double FD_disconnect;
   };
 
   int configurationIndex = 0;
