@@ -78,6 +78,7 @@ class simconnect::toolbox::blocks::SimConnectSinkAutopilotStateMachine : public 
     double ALT_soft_mode_active;
     double EXPED_mode_active;
     double FD_disconnect;
+    double FD_connect;
   };
 
   int configurationIndex = 0;
@@ -101,6 +102,11 @@ class simconnect::toolbox::blocks::SimConnectSinkAutopilotStateMachine : public 
       -1,
       -1,
       -1,
-      -1
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
   };
 };

@@ -215,6 +215,13 @@ bool SimConnectSourceAutopilotStateMachine::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
+    outputPortInfo.push_back(
+        {
+            21,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -407,6 +414,12 @@ bool SimConnectSourceAutopilotStateMachine::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     result &= SimConnect_RequestClientData(
         simConnectHandle,
@@ -434,7 +447,7 @@ bool SimConnectSourceAutopilotStateMachine::output(
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 21; ++kI) {
+  for (int kI = 0; kI < 22; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -471,6 +484,7 @@ bool SimConnectSourceAutopilotStateMachine::output(
   outputSignals[18]->set(0, data.ALT_soft_mode_active);
   outputSignals[19]->set(0, data.EXPED_mode_active);
   outputSignals[20]->set(0, data.FD_disconnect);
+  outputSignals[21]->set(0, data.FD_connect);
 
   // return result
   return true;

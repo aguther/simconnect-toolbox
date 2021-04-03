@@ -173,6 +173,11 @@ bool SimConnectSinkAutopilotStateMachine::configureSizeAndPorts(
          {1},
          Port::DataType::DOUBLE}
     );
+    inputPortInfo.push_back(
+        {21,
+         {1},
+         Port::DataType::DOUBLE}
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -365,6 +370,12 @@ bool SimConnectSinkAutopilotStateMachine::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     if (FAILED(result)) {
       bfError << "Failed to initialize client data";
@@ -418,6 +429,7 @@ bool SimConnectSinkAutopilotStateMachine::output(
   data.ALT_soft_mode_active = inputSignals[18]->get<double>(0);
   data.EXPED_mode_active = inputSignals[19]->get<double>(0);
   data.FD_disconnect = inputSignals[20]->get<double>(0);
+  data.FD_connect = inputSignals[21]->get<double>(0);
 
   // only write when needed
   if (data.enabled_AP1 != lastData.enabled_AP1
@@ -440,7 +452,8 @@ bool SimConnectSinkAutopilotStateMachine::output(
       || data.V_c_kn != lastData.V_c_kn
       || data.ALT_soft_mode_active != lastData.ALT_soft_mode_active
       || data.EXPED_mode_active != lastData.EXPED_mode_active
-      || data.FD_disconnect != lastData.FD_disconnect) {
+      || data.FD_disconnect != lastData.FD_disconnect
+      || data.FD_connect != lastData.FD_connect) {
     // write data to simconnect
     HRESULT result = SimConnect_SetClientData(
         simConnectHandle,
