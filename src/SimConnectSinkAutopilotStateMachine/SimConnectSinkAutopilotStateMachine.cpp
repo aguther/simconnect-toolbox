@@ -395,7 +395,7 @@ bool SimConnectSinkAutopilotStateMachine::output(
 ) {
   // vector for output signals
   std::vector<InputSignalPtr> inputSignals;
-  for (int kI = 0; kI < 21; ++kI) {
+  for (int kI = 0; kI < 22; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getInputPortSignal(kI);
     // check if output is ok
