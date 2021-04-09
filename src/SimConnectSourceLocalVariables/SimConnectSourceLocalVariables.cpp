@@ -222,6 +222,13 @@ bool SimConnectSourceLocalVariables::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
+    outputPortInfo.push_back(
+        {
+            22,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -420,6 +427,12 @@ bool SimConnectSourceLocalVariables::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     result &= SimConnect_RequestClientData(
         simConnectHandle,
@@ -447,7 +460,7 @@ bool SimConnectSourceLocalVariables::output(
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 22; ++kI) {
+  for (int kI = 0; kI < 23; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -485,6 +498,7 @@ bool SimConnectSourceLocalVariables::output(
   outputSignals[19]->set(0, data.flightManagementTrackAngleError);
   outputSignals[20]->set(0, data.flightManagementPhiCommand);
   outputSignals[21]->set(0, data.isSpeedManaged);
+  outputSignals[22]->set(0, data.locPhiCommand);
 
   // return result
   return true;

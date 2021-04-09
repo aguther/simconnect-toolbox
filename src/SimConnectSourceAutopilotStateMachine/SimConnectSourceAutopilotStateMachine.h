@@ -76,6 +76,7 @@ class simconnect::toolbox::blocks::SimConnectSourceAutopilotStateMachine : publi
     double FPA_c_deg;
     double V_c_kn;
     double ALT_soft_mode_active;
+    double ALT_cruise_active;
     double EXPED_mode_active;
     double FD_disconnect;
     double FD_connect;

@@ -98,6 +98,11 @@ bool SimConnectSinkAutopilotLaws::configureSizeAndPorts(
          {1},
          Port::DataType::DOUBLE}
     );
+    inputPortInfo.push_back(
+        {6,
+         {1},
+         Port::DataType::DOUBLE}
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -200,6 +205,12 @@ bool SimConnectSinkAutopilotLaws::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     if (FAILED(result)) {
       bfError << "Failed to initialize client data";
@@ -219,7 +230,7 @@ bool SimConnectSinkAutopilotLaws::output(
 ) {
   // vector for output signals
   std::vector<InputSignalPtr> inputSignals;
-  for (int kI = 0; kI < 6; ++kI) {
+  for (int kI = 0; kI < 7; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getInputPortSignal(kI);
     // check if output is ok
@@ -238,6 +249,7 @@ bool SimConnectSinkAutopilotLaws::output(
   data.flightDirectorPhi = inputSignals[3]->get<double>(0);
   data.autopilotPhi = inputSignals[4]->get<double>(0);
   data.autopilotBeta = inputSignals[5]->get<double>(0);
+  data.locPhiCommand = inputSignals[6]->get<double>(0);
 
   // only write when needed
   if (data.enableAutopilot != lastData.enableAutopilot
@@ -245,7 +257,8 @@ bool SimConnectSinkAutopilotLaws::output(
       || data.autopilotTheta != lastData.autopilotTheta
       || data.flightDirectorPhi != lastData.flightDirectorPhi
       || data.autopilotPhi != lastData.autopilotPhi
-      || data.autopilotBeta != lastData.autopilotBeta) {
+      || data.autopilotBeta != lastData.autopilotBeta
+      || data.locPhiCommand != lastData.locPhiCommand) {
     // write data to simconnect
     HRESULT result = SimConnect_SetClientData(
         simConnectHandle,

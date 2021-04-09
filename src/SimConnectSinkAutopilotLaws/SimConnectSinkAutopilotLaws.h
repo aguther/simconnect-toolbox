@@ -63,6 +63,7 @@ class simconnect::toolbox::blocks::SimConnectSinkAutopilotLaws : public blockfac
     double flightDirectorPhi;
     double autopilotPhi;
     double autopilotBeta;
+    double locPhiCommand;
   };
 
   int configurationIndex = 0;
@@ -71,6 +72,7 @@ class simconnect::toolbox::blocks::SimConnectSinkAutopilotLaws : public blockfac
   AutopilotLaws data;
   AutopilotLaws lastData = {
       false,
+      -90,
       -90,
       -90,
       -90,

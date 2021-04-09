@@ -215,6 +215,20 @@ bool SimConnectSourceLocalVariablesAutothrust::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
+    outputPortInfo.push_back(
+        {
+            21,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
+    outputPortInfo.push_back(
+        {
+            22,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -407,6 +421,18 @@ bool SimConnectSourceLocalVariablesAutothrust::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     result &= SimConnect_RequestClientData(
         simConnectHandle,
@@ -434,7 +460,7 @@ bool SimConnectSourceLocalVariablesAutothrust::output(
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 21; ++kI) {
+  for (int kI = 0; kI < 23; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -471,6 +497,8 @@ bool SimConnectSourceLocalVariablesAutothrust::output(
   outputSignals[18]->set(0, data.is_SRS_GA_mode_active);
   outputSignals[19]->set(0, data.thrust_reduction_altitude);
   outputSignals[20]->set(0, data.thrust_reduction_altitude_go_around);
+  outputSignals[21]->set(0, data.flight_phase);
+  outputSignals[22]->set(0, data.is_soft_alt_mode_active);
 
   // return result
   return true;

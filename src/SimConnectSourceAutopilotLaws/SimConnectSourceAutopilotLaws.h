@@ -63,6 +63,7 @@ class simconnect::toolbox::blocks::SimConnectSourceAutopilotLaws : public blockf
     double flightDirectorPhi;
     double autopilotPhi;
     double autopilotBeta;
+    double locPhiCommand;
   };
 
   int configurationIndex = 0;

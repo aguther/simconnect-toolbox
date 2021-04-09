@@ -79,6 +79,7 @@ class simconnect::toolbox::blocks::SimConnectSourceLocalVariables : public block
     double flightManagementTrackAngleError;
     double flightManagementPhiCommand;
     double isSpeedManaged;
+    double locPhiCommand;
   };
 
   int configurationIndex = 0;

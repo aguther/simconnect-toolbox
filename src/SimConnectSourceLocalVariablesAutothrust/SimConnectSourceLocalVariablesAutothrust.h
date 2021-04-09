@@ -79,6 +79,8 @@ class simconnect::toolbox::blocks::SimConnectSourceLocalVariablesAutothrust : pu
     double is_SRS_GA_mode_active;
     double thrust_reduction_altitude;
     double thrust_reduction_altitude_go_around;
+    double flight_phase;
+    double is_soft_alt_mode_active;
   };
 
   int configurationIndex = 0;
