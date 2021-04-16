@@ -59,6 +59,7 @@ class simconnect::toolbox::blocks::SimConnectSourceLocalVariablesAutothrust : pu
  private:
   struct LocalVariablesAutothrust {
     double ATHR_push;
+    double ATHR_disconnect;
     double TLA_1;
     double TLA_2;
     double V_c_kn;

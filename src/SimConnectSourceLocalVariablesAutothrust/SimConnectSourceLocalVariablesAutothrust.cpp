@@ -229,6 +229,13 @@ bool SimConnectSourceLocalVariablesAutothrust::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
+    outputPortInfo.push_back(
+        {
+            23,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -433,6 +440,12 @@ bool SimConnectSourceLocalVariablesAutothrust::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     result &= SimConnect_RequestClientData(
         simConnectHandle,
@@ -460,7 +473,7 @@ bool SimConnectSourceLocalVariablesAutothrust::output(
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 23; ++kI) {
+  for (int kI = 0; kI < 24; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -477,28 +490,29 @@ bool SimConnectSourceLocalVariablesAutothrust::output(
 
   // write output value to all signals
   outputSignals[0]->set(0, data.ATHR_push);
-  outputSignals[1]->set(0, data.TLA_1);
-  outputSignals[2]->set(0, data.TLA_2);
-  outputSignals[3]->set(0, data.V_c_kn);
-  outputSignals[4]->set(0, data.V_LS_kn);
-  outputSignals[5]->set(0, data.V_MAX_kn);
-  outputSignals[6]->set(0, data.thrust_limit_REV_percent);
-  outputSignals[7]->set(0, data.thrust_limit_IDLE_percent);
-  outputSignals[8]->set(0, data.thrust_limit_CLB_percent);
-  outputSignals[9]->set(0, data.thrust_limit_MCT_percent);
-  outputSignals[10]->set(0, data.thrust_limit_FLEX_percent);
-  outputSignals[11]->set(0, data.thrust_limit_TOGA_percent);
-  outputSignals[12]->set(0, data.flex_temperature_degC);
-  outputSignals[13]->set(0, data.mode_requested);
-  outputSignals[14]->set(0, data.is_mach_mode_active);
-  outputSignals[15]->set(0, data.alpha_floor_condition);
-  outputSignals[16]->set(0, data.is_approach_mode_active);
-  outputSignals[17]->set(0, data.is_SRS_TO_mode_active);
-  outputSignals[18]->set(0, data.is_SRS_GA_mode_active);
-  outputSignals[19]->set(0, data.thrust_reduction_altitude);
-  outputSignals[20]->set(0, data.thrust_reduction_altitude_go_around);
-  outputSignals[21]->set(0, data.flight_phase);
-  outputSignals[22]->set(0, data.is_soft_alt_mode_active);
+  outputSignals[1]->set(0, data.ATHR_disconnect);
+  outputSignals[2]->set(0, data.TLA_1);
+  outputSignals[3]->set(0, data.TLA_2);
+  outputSignals[4]->set(0, data.V_c_kn);
+  outputSignals[5]->set(0, data.V_LS_kn);
+  outputSignals[6]->set(0, data.V_MAX_kn);
+  outputSignals[7]->set(0, data.thrust_limit_REV_percent);
+  outputSignals[8]->set(0, data.thrust_limit_IDLE_percent);
+  outputSignals[9]->set(0, data.thrust_limit_CLB_percent);
+  outputSignals[10]->set(0, data.thrust_limit_MCT_percent);
+  outputSignals[11]->set(0, data.thrust_limit_FLEX_percent);
+  outputSignals[12]->set(0, data.thrust_limit_TOGA_percent);
+  outputSignals[13]->set(0, data.flex_temperature_degC);
+  outputSignals[14]->set(0, data.mode_requested);
+  outputSignals[15]->set(0, data.is_mach_mode_active);
+  outputSignals[16]->set(0, data.alpha_floor_condition);
+  outputSignals[17]->set(0, data.is_approach_mode_active);
+  outputSignals[18]->set(0, data.is_SRS_TO_mode_active);
+  outputSignals[19]->set(0, data.is_SRS_GA_mode_active);
+  outputSignals[20]->set(0, data.thrust_reduction_altitude);
+  outputSignals[21]->set(0, data.thrust_reduction_altitude_go_around);
+  outputSignals[22]->set(0, data.flight_phase);
+  outputSignals[23]->set(0, data.is_soft_alt_mode_active);
 
   // return result
   return true;
