@@ -78,6 +78,7 @@ class simconnect::toolbox::blocks::SimConnectSourceLocalVariablesAutothrust : pu
     double is_approach_mode_active;
     double is_SRS_TO_mode_active;
     double is_SRS_GA_mode_active;
+    double is_LAND_mode_active;
     double thrust_reduction_altitude;
     double thrust_reduction_altitude_go_around;
     double flight_phase;
