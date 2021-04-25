@@ -3,10 +3,12 @@
 #include "SimConnectSinkAutopilotLaws.h"
 #include "SimConnectSinkAutopilotStateMachine.h"
 #include "SimConnectSinkAutothrust.h"
+#include "SimConnectSinkFlyByWire.h"
 #include "SimConnectSource.h"
 #include "SimConnectSourceAutopilotEvents.h"
 #include "SimConnectSourceAutopilotLaws.h"
 #include "SimConnectSourceAutopilotStateMachine.h"
+#include "SimConnectSourceFlyByWire.h"
 #include "SimConnectSourceLocalVariables.h"
 #include "SimConnectSourceLocalVariablesAutothrust.h"
 
@@ -47,6 +49,12 @@ SHLIBPP_DEFINE_SHARED_SUBCLASS(
 );
 
 SHLIBPP_DEFINE_SHARED_SUBCLASS(
+    SimConnectSinkFlyByWire,
+    simconnect::toolbox::blocks::SimConnectSinkFlyByWire,
+    blockfactory::core::Block
+);
+
+SHLIBPP_DEFINE_SHARED_SUBCLASS(
     SimConnectSource,
     simconnect::toolbox::blocks::SimConnectSource,
     blockfactory::core::Block
@@ -67,6 +75,12 @@ SHLIBPP_DEFINE_SHARED_SUBCLASS(
 SHLIBPP_DEFINE_SHARED_SUBCLASS(
     SimConnectSourceAutopilotStateMachine,
     simconnect::toolbox::blocks::SimConnectSourceAutopilotStateMachine,
+    blockfactory::core::Block
+);
+
+SHLIBPP_DEFINE_SHARED_SUBCLASS(
+    SimConnectSourceFlyByWire,
+    simconnect::toolbox::blocks::SimConnectSourceFlyByWire,
     blockfactory::core::Block
 );
 

@@ -21,10 +21,12 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/src/SimConnectSinkAutopilotLaws
         ${CMAKE_SOURCE_DIR}/src/SimConnectSinkAutopilotStateMachine
         ${CMAKE_SOURCE_DIR}/src/SimConnectSinkAutothrust
+        ${CMAKE_SOURCE_DIR}/src/SimConnectSinkFlyByWire
         ${CMAKE_SOURCE_DIR}/src/SimConnectSource
         ${CMAKE_SOURCE_DIR}/src/SimConnectSourceAutopilotEvents
         ${CMAKE_SOURCE_DIR}/src/SimConnectSourceAutopilotLaws
         ${CMAKE_SOURCE_DIR}/src/SimConnectSourceAutopilotStateMachine
+        ${CMAKE_SOURCE_DIR}/src/SimConnectSourceFlyByWire
         ${CMAKE_SOURCE_DIR}/src/SimConnectSourceLocalVariables
         ${CMAKE_SOURCE_DIR}/src/SimConnectSourceLocalVariablesAutothrust
 )
@@ -50,10 +52,12 @@ add_library(
         src/SimConnectSinkAutopilotLaws/SimConnectSinkAutopilotLaws.cpp
         src/SimConnectSinkAutopilotStateMachine/SimConnectSinkAutopilotStateMachine.cpp
         src/SimConnectSinkAutothrust/SimConnectSinkAutothrust.cpp
+        src/SimConnectSinkFlyByWire/SimConnectSinkFlyByWire.cpp
         src/SimConnectSource/SimConnectSource.cpp
         src/SimConnectSourceAutopilotEvents/SimConnectSourceAutopilotEvents.cpp
         src/SimConnectSourceAutopilotLaws/SimConnectSourceAutopilotLaws.cpp
         src/SimConnectSourceAutopilotStateMachine/SimConnectSourceAutopilotStateMachine.cpp
+        src/SimConnectSourceFlyByWire/SimConnectSourceFlyByWire.cpp
         src/SimConnectSourceLocalVariables/SimConnectSourceLocalVariables.cpp
         src/SimConnectSourceLocalVariablesAutothrust/SimConnectSourceLocalVariablesAutothrust.cpp
 )
