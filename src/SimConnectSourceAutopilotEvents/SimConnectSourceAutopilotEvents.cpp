@@ -152,6 +152,13 @@ bool SimConnectSourceAutopilotEvents::configureSizeAndPorts(
             Port::DataType::DOUBLE
         }
     );
+    outputPortInfo.push_back(
+        {
+            12,
+            {1},
+            Port::DataType::DOUBLE
+        }
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -207,18 +214,19 @@ bool SimConnectSourceAutopilotEvents::initialize(
   }
 
   try {
-    bool boolResult = addEvent(0, "A32NX.FCU_AP_1_PUSH", true);
-    boolResult &= addEvent(1, "A32NX.FCU_AP_2_PUSH", false);
-    boolResult &= addEvent(2, "AUTOPILOT_OFF", false);
-    boolResult &= addEvent(3, "A32NX.FCU_HDG_PUSH", false);
-    boolResult &= addEvent(4, "A32NX.FCU_HDG_PULL", false);
-    boolResult &= addEvent(5, "A32NX.FCU_ALT_PUSH", false);
-    boolResult &= addEvent(6, "A32NX.FCU_ALT_PULL", false);
-    boolResult &= addEvent(7, "A32NX.FCU_VS_PUSH", false);
-    boolResult &= addEvent(8, "A32NX.FCU_VS_PULL", false);
-    boolResult &= addEvent(9, "A32NX.FCU_LOC_PUSH", false);
-    boolResult &= addEvent(10, "A32NX.FCU_APPR_PUSH", false);
-    boolResult &= addEvent(11, "A32NX.FCU_EXPED_PUSH", false);
+    bool boolResult = addEvent(0, "AUTOPILOT_ON", true);
+    boolResult &= addEvent(1, "A32NX.FCU_AP_1_PUSH", false);
+    boolResult &= addEvent(2, "A32NX.FCU_AP_2_PUSH", false);
+    boolResult &= addEvent(3, "AUTOPILOT_OFF", false);
+    boolResult &= addEvent(4, "A32NX.FCU_HDG_PUSH", false);
+    boolResult &= addEvent(5, "A32NX.FCU_HDG_PULL", false);
+    boolResult &= addEvent(6, "A32NX.FCU_ALT_PUSH", false);
+    boolResult &= addEvent(7, "A32NX.FCU_ALT_PULL", false);
+    boolResult &= addEvent(8, "A32NX.FCU_VS_PUSH", false);
+    boolResult &= addEvent(9, "A32NX.FCU_VS_PULL", false);
+    boolResult &= addEvent(10, "A32NX.FCU_LOC_PUSH", false);
+    boolResult &= addEvent(11, "A32NX.FCU_APPR_PUSH", false);
+    boolResult &= addEvent(12, "A32NX.FCU_EXPED_PUSH", false);
 
     HRESULT result = SimConnect_SetNotificationGroupPriority(
         simConnectHandle,
@@ -244,7 +252,7 @@ bool SimConnectSourceAutopilotEvents::output(
 ) {
   // vector for output signals
   std::vector<OutputSignalPtr> outputSignals;
-  for (int kI = 0; kI < 12; ++kI) {
+  for (int kI = 0; kI < 13; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getOutputPortSignal(kI);
     // check if output is ok
@@ -260,20 +268,22 @@ bool SimConnectSourceAutopilotEvents::output(
   processDispatch();
 
   // write output value to all signals
-  outputSignals[0]->set(0, data.AP_1_push);
-  outputSignals[1]->set(0, data.AP_2_push);
-  outputSignals[2]->set(0, data.AP_disconnect);
-  outputSignals[3]->set(0, data.HDG_push);
-  outputSignals[4]->set(0, data.HDG_pull);
-  outputSignals[5]->set(0, data.ALT_push);
-  outputSignals[6]->set(0, data.ALT_pull);
-  outputSignals[7]->set(0, data.VS_push);
-  outputSignals[8]->set(0, data.VS_pull);
-  outputSignals[9]->set(0, data.LOC_push);
-  outputSignals[10]->set(0, data.APPR_push);
-  outputSignals[11]->set(0, data.EXPED_push);
+  outputSignals[0]->set(0, data.AP_engage);
+  outputSignals[1]->set(0, data.AP_1_push);
+  outputSignals[2]->set(0, data.AP_2_push);
+  outputSignals[3]->set(0, data.AP_disconnect);
+  outputSignals[4]->set(0, data.HDG_push);
+  outputSignals[5]->set(0, data.HDG_pull);
+  outputSignals[6]->set(0, data.ALT_push);
+  outputSignals[7]->set(0, data.ALT_pull);
+  outputSignals[8]->set(0, data.VS_push);
+  outputSignals[9]->set(0, data.VS_pull);
+  outputSignals[10]->set(0, data.LOC_push);
+  outputSignals[11]->set(0, data.APPR_push);
+  outputSignals[12]->set(0, data.EXPED_push);
 
   // reset signals
+  data.AP_engage = 0;
   data.AP_1_push = 0;
   data.AP_2_push = 0;
   data.AP_disconnect = 0;
@@ -333,58 +343,63 @@ void SimConnectSourceAutopilotEvents::dispatchProcedure(
       auto *event = (SIMCONNECT_RECV_EVENT *) pData;
       switch (event->uEventID) {
         case 0: {
-          data.AP_1_push = 1;
+          data.AP_engage = 1;
           break;
         }
 
         case 1: {
-          data.AP_2_push = 1;
+          data.AP_1_push = 1;
           break;
         }
 
         case 2: {
-          data.AP_disconnect = 1;
+          data.AP_2_push = 1;
           break;
         }
 
         case 3: {
+          data.AP_disconnect = 1;
+          break;
+        }
+
+        case 4: {
           data.HDG_push = 1;
           break;
         }
-        case 4: {
+        case 5: {
           data.HDG_pull = 1;
           break;
         }
 
-        case 5: {
+        case 6: {
           data.ALT_push = 1;
           break;
         }
-        case 6: {
+        case 7: {
           data.ALT_pull = 1;
           break;
         }
 
-        case 7: {
+        case 8: {
           data.VS_push = 1;
           break;
         }
-        case 8: {
+        case 9: {
           data.VS_pull = 1;
           break;
         }
 
-        case 9: {
+        case 10: {
           data.LOC_push = 1;
           break;
         }
 
-        case 10: {
+        case 11: {
           data.APPR_push = 1;
           break;
         }
 
-        case 11: {
+        case 12: {
           data.EXPED_push = 1;
           break;
         }
