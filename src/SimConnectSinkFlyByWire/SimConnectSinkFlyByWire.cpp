@@ -88,6 +88,16 @@ bool SimConnectSinkFlyByWire::configureSizeAndPorts(
          {1},
          Port::DataType::DOUBLE}
     );
+    inputPortInfo.push_back(
+        {4,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {5,
+         {1},
+         Port::DataType::DOUBLE}
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -178,6 +188,18 @@ bool SimConnectSinkFlyByWire::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     if (FAILED(result)) {
       bfError << "Failed to initialize client data";
@@ -197,7 +219,7 @@ bool SimConnectSinkFlyByWire::output(
 ) {
   // vector for output signals
   std::vector<InputSignalPtr> inputSignals;
-  for (int kI = 0; kI < 4; ++kI) {
+  for (int kI = 0; kI < 6; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getInputPortSignal(kI);
     // check if output is ok
@@ -210,13 +232,17 @@ bool SimConnectSinkFlyByWire::output(
   }
 
   // write output value to all signals
-  data.alpha_floor_command = inputSignals[0]->get<double>(0);
-  data.protection_ap_disc = inputSignals[1]->get<double>(0);
-  data.v_alpha_prot_kn = inputSignals[2]->get<double>(0);
-  data.v_alpha_max_kn = inputSignals[3]->get<double>(0);
+  data.eta_trim_deg_should_write = inputSignals[0]->get<double>(0);
+  data.zeta_trim_pos_should_write = inputSignals[1]->get<double>(0);
+  data.alpha_floor_command = inputSignals[2]->get<double>(0);
+  data.protection_ap_disc = inputSignals[3]->get<double>(0);
+  data.v_alpha_prot_kn = inputSignals[4]->get<double>(0);
+  data.v_alpha_max_kn = inputSignals[5]->get<double>(0);
 
   // only write when needed
-  if (data.alpha_floor_command != lastData.alpha_floor_command
+  if (data.eta_trim_deg_should_write != lastData.eta_trim_deg_should_write
+      || data.zeta_trim_pos_should_write != lastData.zeta_trim_pos_should_write
+      || data.alpha_floor_command != lastData.alpha_floor_command
       || data.protection_ap_disc != lastData.protection_ap_disc
       || data.v_alpha_prot_kn != lastData.v_alpha_prot_kn
       || data.v_alpha_max_kn != lastData.v_alpha_max_kn) {

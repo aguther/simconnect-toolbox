@@ -57,6 +57,8 @@ class simconnect::toolbox::blocks::SimConnectSinkFlyByWire : public blockfactory
 
  private:
   struct FlyByWire {
+    double eta_trim_deg_should_write;
+    double zeta_trim_pos_should_write;
     double alpha_floor_command;
     double protection_ap_disc;
     double v_alpha_prot_kn;
@@ -71,6 +73,8 @@ class simconnect::toolbox::blocks::SimConnectSinkFlyByWire : public blockfactory
       -1,
       -1,
       -1,
-      -1
+      -1,
+      -1,
+      -1,
   };
 };
