@@ -218,12 +218,12 @@ bool SimConnectSourceAutopilotEvents::initialize(
     boolResult &= addEvent(1, "A32NX.FCU_AP_1_PUSH", false);
     boolResult &= addEvent(2, "A32NX.FCU_AP_2_PUSH", false);
     boolResult &= addEvent(3, "AUTOPILOT_OFF", false);
-    boolResult &= addEvent(4, "A32NX.FCU_HDG_PUSH", false);
-    boolResult &= addEvent(5, "A32NX.FCU_HDG_PULL", false);
+    boolResult &= addEvent(4, "A32NX.FCU_TO_AP_HDG_PUSH", false);
+    boolResult &= addEvent(5, "A32NX.FCU_TO_AP_HDG_PULL", false);
     boolResult &= addEvent(6, "A32NX.FCU_ALT_PUSH", false);
     boolResult &= addEvent(7, "A32NX.FCU_ALT_PULL", false);
-    boolResult &= addEvent(8, "A32NX.FCU_VS_PUSH", false);
-    boolResult &= addEvent(9, "A32NX.FCU_VS_PULL", false);
+    boolResult &= addEvent(8, "A32NX.FCU_TO_AP_VS_PUSH", false);
+    boolResult &= addEvent(9, "A32NX.FCU_TO_AP_VS_PULL", false);
     boolResult &= addEvent(10, "A32NX.FCU_LOC_PUSH", false);
     boolResult &= addEvent(11, "A32NX.FCU_APPR_PUSH", false);
     boolResult &= addEvent(12, "A32NX.FCU_EXPED_PUSH", false);
