@@ -61,6 +61,7 @@ class simconnect::toolbox::blocks::SimConnectSourceLocalVariables : public block
     double V2;
     double V_APP;
     double V_LS;
+    double V_MAX;
     double flightPlanAvailable;
     double altitudeConstraint;
     double thrustReductionAltitude;
