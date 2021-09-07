@@ -42,5 +42,5 @@ string SimConnectVariableLookupTable::normalizeName(
     const string &itemName
 ) {
   // this is needed to support indexed variables
-  return regex_replace(itemName, regex("(.*)(:[0-9]+)"), "$1:index");
+  return regex_replace(itemName, regex("(.*)(:[0-9]+)"), "$1");
 }
