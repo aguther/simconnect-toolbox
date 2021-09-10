@@ -193,6 +193,26 @@ bool SimConnectSinkAutopilotStateMachine::configureSizeAndPorts(
          {1},
          Port::DataType::DOUBLE}
     );
+    inputPortInfo.push_back(
+        {25,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {26,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {27,
+         {1},
+         Port::DataType::DOUBLE}
+    );
+    inputPortInfo.push_back(
+        {28,
+         {1},
+         Port::DataType::DOUBLE}
+    );
   } catch (std::exception &ex) {
     bfError << "Failed to parse variables: " << ex.what();
     return false;
@@ -409,6 +429,30 @@ bool SimConnectSinkAutopilotStateMachine::initialize(
         SIMCONNECT_CLIENTDATAOFFSET_AUTO,
         SIMCONNECT_CLIENTDATATYPE_FLOAT64
     );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
+    result &= SimConnect_AddToClientDataDefinition(
+        simConnectHandle,
+        0,
+        SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+        SIMCONNECT_CLIENTDATATYPE_FLOAT64
+    );
 
     if (FAILED(result)) {
       bfError << "Failed to initialize client data";
@@ -428,7 +472,7 @@ bool SimConnectSinkAutopilotStateMachine::output(
 ) {
   // vector for output signals
   std::vector<InputSignalPtr> inputSignals;
-  for (int kI = 0; kI < 25; ++kI) {
+  for (int kI = 0; kI < 29; ++kI) {
     // get output signal
     auto outputSignal = blockInfo->getInputPortSignal(kI);
     // check if output is ok
@@ -466,6 +510,10 @@ bool SimConnectSinkAutopilotStateMachine::output(
   data.EXPED_mode_active = inputSignals[22]->get<double>(0);
   data.FD_disconnect = inputSignals[23]->get<double>(0);
   data.FD_connect = inputSignals[24]->get<double>(0);
+  data.nav_e_loc_valid = inputSignals[25]->get<double>(0);
+  data.nav_e_loc_error_deg = inputSignals[26]->get<double>(0);
+  data.nav_e_gs_valid = inputSignals[27]->get<double>(0);
+  data.nav_e_gs_error_deg = inputSignals[28]->get<double>(0);
 
   // only write when needed
   if (data.enabled_AP1 != lastData.enabled_AP1
@@ -492,7 +540,11 @@ bool SimConnectSinkAutopilotStateMachine::output(
       || data.ALT_cruise_active != lastData.ALT_cruise_active
       || data.EXPED_mode_active != lastData.EXPED_mode_active
       || data.FD_disconnect != lastData.FD_disconnect
-      || data.FD_connect != lastData.FD_connect) {
+      || data.FD_connect != lastData.FD_connect
+      || data.nav_e_loc_valid != lastData.nav_e_loc_valid
+      || data.nav_e_loc_error_deg != lastData.nav_e_loc_error_deg
+      || data.nav_e_gs_valid != lastData.nav_e_gs_valid
+      || data.nav_e_gs_error_deg != lastData.nav_e_gs_error_deg) {
     // write data to simconnect
     HRESULT result = SimConnect_SetClientData(
         simConnectHandle,

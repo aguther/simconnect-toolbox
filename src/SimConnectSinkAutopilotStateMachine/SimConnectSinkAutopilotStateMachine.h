@@ -82,6 +82,10 @@ class simconnect::toolbox::blocks::SimConnectSinkAutopilotStateMachine : public 
     double EXPED_mode_active;
     double FD_disconnect;
     double FD_connect;
+    double nav_e_loc_valid;
+    double nav_e_loc_error_deg;
+    double nav_e_gs_valid;
+    double nav_e_gs_error_deg;
   };
 
   int configurationIndex = 0;
@@ -91,6 +95,10 @@ class simconnect::toolbox::blocks::SimConnectSinkAutopilotStateMachine : public 
   AutopilotStateMachine lastData = {
       false,
       false,
+      -1,
+      -1,
+      -1,
+      -1,
       -1,
       -1,
       -1,
