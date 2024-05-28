@@ -21,15 +21,26 @@
 using namespace std;
 using namespace simconnect::toolbox::connection;
 
+bool SimConnectVariableLookupTable::isLvar(
+    const SimConnectVariable &item
+) {
+  return regex_search(item.name, regex("^L:"));
+}
+
 bool SimConnectVariableLookupTable::isKnown(
     const SimConnectVariable &item
 ) {
-  return LOOKUP_TABLE.find(normalizeName(item.name)) != LOOKUP_TABLE.end();
+  return LOOKUP_TABLE.find(normalizeName(item.name)) != LOOKUP_TABLE.end() || SimConnectVariableLookupTable::isLvar(item);
 }
 
 SIMCONNECT_VARIABLE_TYPE SimConnectVariableLookupTable::getDataType(
     const SimConnectVariable &item
 ) {
+  // check if variable is an Lvar. All Lvars are of type F64, so return that.
+  if (SimConnectVariableLookupTable::isLvar(item)) {
+    return SIMCONNECT_VARIABLE_TYPE_FLOAT64;
+  }
+
   // check if variable is known
   if (!isKnown(item)) {
     throw invalid_argument("The variable is not known!");
@@ -42,5 +53,5 @@ string SimConnectVariableLookupTable::normalizeName(
     const string &itemName
 ) {
   // this is needed to support indexed variables
-  return regex_replace(itemName, regex("(.*)(:[0-9]+)"), "$1:index");
+  return regex_replace(itemName, regex("(.*)(:[0-9]+)"), "$1");
 }
